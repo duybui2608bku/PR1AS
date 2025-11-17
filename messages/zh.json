@@ -1,0 +1,177 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "error": "发生错误",
+    "success": "成功",
+    "cancel": "取消",
+    "confirm": "确认",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "search": "搜索",
+    "filter": "筛选",
+    "back": "返回",
+    "next": "下一页",
+    "previous": "上一页",
+    "submit": "提交",
+    "close": "关闭",
+    "homeButton": "返回首页"
+  },
+  "nav": {
+    "home": "首页",
+    "about": "关于我们",
+    "contact": "联系我们",
+    "login": "登录",
+    "signup": "注册",
+    "logout": "退出",
+    "profile": "个人资料",
+    "settings": "设置",
+    "becomeWorker": "成为工作者"
+  },
+  "header": {
+    "brandName": "PR1AS",
+    "userMenu": {
+      "profile": "我的个人资料",
+      "bookings": "预订",
+      "logout": "退出"
+    }
+  },
+  "footer": {
+    "about": {
+      "title": "关于",
+      "aboutUs": "关于我们",
+      "careers": "招聘",
+      "press": "新闻",
+      "blog": "博客"
+    },
+    "community": {
+      "title": "社区",
+      "diversity": "多样性与包容性",
+      "accessibility": "无障碍访问",
+      "partners": "合作伙伴",
+      "safety": "安全"
+    },
+    "worker": {
+      "title": "工作者",
+      "become": "成为工作者",
+      "help": "帮助中心",
+      "resources": "资源",
+      "forum": "论坛"
+    },
+    "support": {
+      "title": "支持",
+      "helpCenter": "帮助中心",
+      "cancellation": "取消政策",
+      "contact": "联系我们",
+      "faq": "常见问题"
+    },
+    "copyright": "© 2025 PR1AS",
+    "terms": "条款",
+    "privacy": "隐私",
+    "sitemap": "网站地图"
+  },
+  "home": {
+    "hero": {
+      "title": "寻找专业工作者",
+      "titleLine2": "满足所有需求",
+      "subtitle": "连接越南各地数千名值得信赖的可靠工作者",
+      "findWorker": "立即寻找工作者",
+      "becomeWorker": "成为工作者"
+    },
+    "features": {
+      "title": "为什么选择PR1AS？",
+      "safety": {
+        "title": "安全可靠",
+        "description": "严格的身份验证系统和所有交易的安全支付保护"
+      },
+      "fast": {
+        "title": "快速便捷",
+        "description": "通过简单易用的界面，几分钟内即可找到并预订工作者"
+      },
+      "quality": {
+        "title": "质量保证",
+        "description": "真实用户评价帮助您选择最合适的工作者"
+      }
+    },
+    "cta": {
+      "title": "准备好开始了吗？",
+      "subtitle": "立即加入PR1AS社区，体验不同",
+      "button": "免费注册"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "欢迎回来",
+      "subtitle": "登录以继续使用PR1AS",
+      "continueWithGoogle": "使用Google继续",
+      "orLoginWithEmail": "或使用电子邮箱登录",
+      "emailPlaceholder": "输入您的电子邮箱",
+      "passwordPlaceholder": "输入密码",
+      "emailRequired": "请输入电子邮箱",
+      "emailInvalid": "电子邮箱无效",
+      "passwordRequired": "请输入密码",
+      "forgotPassword": "忘记密码？",
+      "loginButton": "登录",
+      "noAccount": "还没有账户？",
+      "signupLink": "立即注册",
+      "loginSuccess": "登录成功！",
+      "googleLoginComingSoon": "Google登录功能即将推出！"
+    },
+    "signup": {
+      "title": "创建账户",
+      "subtitle": "立即加入PR1AS社区",
+      "selectRole": "我想：",
+      "clientRole": "客户 - 寻找服务",
+      "clientDescription": "为您的项目寻找并雇佣工作者",
+      "workerRole": "工作者 - 提供服务",
+      "workerDescription": "提供服务并赚取收入",
+      "continueWithGoogle": "使用Google注册",
+      "orSignupWithEmail": "或使用电子邮箱注册",
+      "namePlaceholder": "输入您的全名",
+      "emailPlaceholder": "输入您的电子邮箱",
+      "passwordPlaceholder": "创建密码（最少6个字符）",
+      "nameRequired": "请输入您的全名",
+      "emailRequired": "请输入电子邮箱",
+      "emailInvalid": "电子邮箱无效",
+      "passwordRequired": "请输入密码",
+      "passwordMinLength": "密码必须至少6个字符",
+      "signupButton": "创建账户",
+      "haveAccount": "已有账户？",
+      "loginLink": "登录",
+      "signupSuccess": "账户创建成功！",
+      "googleSignupComingSoon": "Google注册功能即将推出！"
+    }
+  },
+  "banned": {
+    "title": "账户已被暂停",
+    "description": "您的账户因违反我们的",
+    "termsLink": "服务条款",
+    "or": "或",
+    "guidelinesLink": "社区准则",
+    "ofUs": "而被暂停。",
+    "whyTitle": "为什么我的账户被暂停？",
+    "whyDescription": "账户可能因以下原因被暂停：",
+    "reasons": {
+      "payment": "违反支付政策",
+      "fraud": "欺诈或欺骗行为",
+      "complaints": "收到其他用户的多次投诉",
+      "terms": "违反服务条款"
+    },
+    "contactText": "如果您认为这是一个错误或需要更多信息，请联系我们的支持团队。",
+    "contactButton": "联系支持",
+    "homeButton": "返回首页",
+    "supportEmail": "支持邮箱："
+  },
+  "errors": {
+    "404": {
+      "title": "404",
+      "subtitle": "抱歉，您要查找的页面不存在。",
+      "button": "返回首页"
+    },
+    "500": {
+      "title": "出现错误",
+      "subtitle": "抱歉，发生了错误。请重试。",
+      "button": "重试"
+    }
+  }
+}
