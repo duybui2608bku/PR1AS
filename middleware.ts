@@ -62,8 +62,8 @@ export async function middleware(request: NextRequest) {
           return NextResponse.redirect(new URL(dashboardUrl, request.url));
         }
       }
-    } catch (error) {
-      console.error("Middleware auth check error:", error);
+    } catch {
+      // Silently fail - allow request to continue
     }
   }
 
@@ -149,8 +149,7 @@ export async function middleware(request: NextRequest) {
 
       // Access granted
       return NextResponse.next();
-    } catch (error) {
-      console.error("Middleware error:", error);
+    } catch {
       // On error, redirect to login
       const loginUrl = new URL("/auth/login", request.url);
       loginUrl.searchParams.set("redirect", pathname);

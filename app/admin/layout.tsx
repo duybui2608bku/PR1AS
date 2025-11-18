@@ -18,6 +18,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import type { MenuProps } from "antd";
+import Loading from "@/components/common/Loading";
 import "./styles.css";
 
 const { Header, Sider, Content } = Layout;
@@ -111,7 +112,6 @@ export default function AdminLayout({
 
       setUser(user);
     } catch (error) {
-      console.error("Auth check failed:", error);
       router.push("/auth/login");
     } finally {
       setLoading(false);
@@ -153,18 +153,7 @@ export default function AdminLayout({
   };
 
   if (loading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        {t("common.loading")}
-      </div>
-    );
+    return <Loading variant="fullPage" size="large" tip={t("common.loading")} />;
   }
 
   return (

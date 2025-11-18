@@ -261,7 +261,7 @@ export const walletAPI = {
    */
   async getEscrows(filters?: EscrowFilters): Promise<{
     escrows: EscrowHold[];
-    pagination: any;
+    pagination: Record<string, unknown>;
   }> {
     const authHeader = await getAuthHeader();
     const params = new URLSearchParams();
@@ -376,7 +376,7 @@ export const adminWalletAPI = {
   /**
    * Update platform setting
    */
-  async updateSetting(key: string, value: any): Promise<PlatformSettings> {
+  async updateSetting(key: string, value: unknown): Promise<PlatformSettings> {
     const authHeader = await getAuthHeader();
     const response = await fetch('/api/admin/wallet/settings', {
       method: 'PUT',

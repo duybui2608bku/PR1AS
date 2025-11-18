@@ -29,6 +29,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { showMessage } from "@/lib/utils/toast";
 import { authAPI, redirectByRole } from "@/lib/auth/api-client";
+import { getErrorMessage } from "@/lib/utils/common";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 import styles from "./page.module.css";
 
@@ -63,7 +64,7 @@ export default function SignupPage() {
       const redirectUrl = redirectByRole(result.user.role);
       router.push(redirectUrl);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Sign up failed";
+      const errorMessage = getErrorMessage(error, "Sign up failed");
       
       if (errorMessage.includes("EMAIL_ALREADY_REGISTERED_WITH_DIFFERENT_ROLE")) {
         showMessage.error("Email này đã được đăng ký với vai trò khác. Vui lòng đăng nhập hoặc sử dụng email khác.");

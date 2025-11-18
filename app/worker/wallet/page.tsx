@@ -40,38 +40,6 @@ export default function WorkerWalletPage() {
               onWithdraw={() => setWithdrawModalOpen(true)}
             />
           </Col>
-          <Col xs={24} lg={12} xl={14}>
-            <div
-              style={{
-                padding: "24px",
-                background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-                borderRadius: "12px",
-                color: "#fff",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-              }}
-            >
-              <Title level={3} style={{ color: "#fff", marginTop: 0 }}>
-                {t("wallet.worker.earnings")}
-              </Title>
-              <Space direction="vertical" size="small">
-                <p style={{ fontSize: "16px", margin: 0 }}>
-                  {t("wallet.worker.earningsInfo.withdraw")}
-                </p>
-                <p style={{ fontSize: "16px", margin: 0 }}>
-                  {t("wallet.worker.earningsInfo.protected")}
-                </p>
-                <p style={{ fontSize: "16px", margin: 0 }}>
-                  {t("wallet.worker.earningsInfo.fast")}
-                </p>
-                <p style={{ fontSize: "16px", margin: 0 }}>
-                  {t("wallet.worker.earningsInfo.track")}
-                </p>
-              </Space>
-            </div>
-          </Col>
         </Row>
 
         {/* Transaction History */}

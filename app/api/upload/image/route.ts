@@ -84,7 +84,6 @@ export async function POST(request: NextRequest) {
       });
 
     if (error) {
-      console.error("Supabase upload error:", error);
       return NextResponse.json(
         { error: "Failed to upload image: " + error.message },
         { status: 500 }
@@ -104,8 +103,7 @@ export async function POST(request: NextRequest) {
         fileName: fileName,
       },
     });
-  } catch (error) {
-    console.error("Upload error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -151,7 +149,6 @@ export async function DELETE(request: NextRequest) {
     const { error } = await supabase.storage.from("image").remove([filePath]);
 
     if (error) {
-      console.error("Supabase delete error:", error);
       return NextResponse.json(
         { error: "Failed to delete image: " + error.message },
         { status: 500 }
@@ -162,8 +159,7 @@ export async function DELETE(request: NextRequest) {
       success: true,
       message: "Image deleted successfully",
     });
-  } catch (error) {
-    console.error("Delete error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

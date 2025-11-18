@@ -63,14 +63,12 @@ export async function getSiteSettings(): Promise<SEOSettings> {
     });
 
     if (!response.ok) {
-      console.warn("Failed to fetch site settings, using defaults");
       return defaultSettings;
     }
 
     const result = await response.json();
     return result.data || defaultSettings;
   } catch (error) {
-    console.error("Error fetching site settings:", error);
     return defaultSettings;
   }
 }
@@ -92,7 +90,6 @@ export async function getSiteSettingsServer(): Promise<SEOSettings> {
       .single();
 
     if (error && error.code !== "PGRST116") {
-      console.warn("Failed to fetch site settings from database:", error);
       return defaultSettings;
     }
 
@@ -102,7 +99,6 @@ export async function getSiteSettingsServer(): Promise<SEOSettings> {
 
     return (data.value as SEOSettings) || defaultSettings;
   } catch (error) {
-    console.error("Error fetching site settings:", error);
     return defaultSettings;
   }
 }

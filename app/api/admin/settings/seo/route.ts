@@ -47,8 +47,7 @@ export async function GET() {
     }
 
     return NextResponse.json({ data: data.value });
-  } catch (error) {
-    console.error("Error fetching SEO settings:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch SEO settings" },
       { status: 500 }
@@ -152,8 +151,7 @@ export async function POST(request: NextRequest) {
       success: true,
       message: "SEO settings updated successfully",
     });
-  } catch (error) {
-    console.error("Error updating SEO settings:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to update SEO settings" },
       { status: 500 }

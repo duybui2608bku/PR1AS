@@ -53,8 +53,7 @@ export default function UserManagementPage() {
       if (error) throw error;
 
       setUsers(data.users as unknown as User[]);
-    } catch (error) {
-      console.error("Error fetching users:", error);
+    } catch {
       message.error("Failed to load users");
     } finally {
       setLoading(false);
@@ -85,8 +84,7 @@ export default function UserManagementPage() {
 
           message.success("User banned successfully");
           fetchUsers();
-        } catch (error) {
-          console.error("Error banning user:", error);
+        } catch {
           message.error("Failed to ban user");
         }
       },
@@ -103,8 +101,7 @@ export default function UserManagementPage() {
 
       message.success("User unbanned successfully");
       fetchUsers();
-    } catch (error) {
-      console.error("Error unbanning user:", error);
+    } catch {
       message.error("Failed to unban user");
     }
   };
@@ -125,8 +122,7 @@ export default function UserManagementPage() {
 
           message.success("User deleted successfully");
           fetchUsers();
-        } catch (error) {
-          console.error("Error deleting user:", error);
+        } catch {
           message.error("Failed to delete user");
         }
       },

@@ -35,7 +35,6 @@ export default function ImageUploadExamples() {
           folder="avatar"
           value={avatarUrl}
           onChange={(url, path) => {
-            console.log("Avatar changed:", { url, path });
             setAvatarUrl(url);
             setAvatarPath(path);
           }}
@@ -75,7 +74,6 @@ export default function ImageUploadExamples() {
           folder="general"
           value={imageUrl}
           onChange={(url, path) => {
-            console.log("Image changed:", { url, path });
             setImageUrl(url);
             setImagePath(path);
           }}

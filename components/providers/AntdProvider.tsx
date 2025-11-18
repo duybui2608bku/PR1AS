@@ -25,8 +25,7 @@ export function AntdAppProvider({ children }: { children: React.ReactNode }) {
     <ConfigProvider
       theme={{
         token: {
-          fontFamily:
-            "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+          fontFamily: "var(--font-family-base)",
           fontSize: 14,
           colorPrimary: "#667eea",
           borderRadius: 8,

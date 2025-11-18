@@ -111,7 +111,7 @@ export class BankTransferService {
    * Verify webhook signature (if needed)
    * Note: Sepay might provide webhook signature verification
    */
-  verifyWebhookSignature(payload: any, signature: string, secret: string): boolean {
+  verifyWebhookSignature(payload: unknown, signature: string, secret: string): boolean {
     // Implement signature verification if Sepay provides it
     // For now, return true (you should implement proper verification)
     return true;
@@ -137,19 +137,16 @@ export class BankTransferService {
 
     // Validate webhook data
     if (transferType !== 'in') {
-      console.log('Webhook ignored: not an incoming transfer');
       return null;
     }
 
     if (accountNumber !== this.config.account) {
-      console.log('Webhook ignored: wrong account number');
       return null;
     }
 
     // Extract transfer content code (should be in format ND...)
     const contentMatch = content.match(/ND\d+/i);
     if (!contentMatch) {
-      console.log('Webhook ignored: invalid transfer content format');
       return null;
     }
 
@@ -164,13 +161,11 @@ export class BankTransferService {
       .single();
 
     if (error || !deposit) {
-      console.log('Webhook ignored: no matching deposit request found');
       return null;
     }
 
     // Check if already processed
     if (deposit.webhook_received) {
-      console.log('Webhook ignored: already processed');
       return deposit as BankDeposit;
     }
 
@@ -180,7 +175,6 @@ export class BankTransferService {
     const tolerance = expectedVnd * 0.02; // 2% tolerance
 
     if (Math.abs(receivedVnd - expectedVnd) > tolerance) {
-      console.log(`Webhook warning: amount mismatch. Expected: ${expectedVnd}, Received: ${receivedVnd}`);
       // Still process but mark for manual review
     }
 
@@ -242,7 +236,6 @@ export class BankTransferService {
       .select();
 
     if (error) {
-      console.error('Failed to expire old deposits:', error);
       return 0;
     }
 
@@ -353,7 +346,6 @@ export class PayPalService {
 
     if (!response.ok) {
       const error = await response.json();
-      console.error('PayPal order creation failed:', error);
       throw new WalletError(
         'Failed to create PayPal order',
         WalletErrorCodes.PAYMENT_GATEWAY_ERROR,
@@ -362,7 +354,11 @@ export class PayPalService {
     }
 
     const order = await response.json();
-    const approvalUrl = order.links.find((link: any) => link.rel === 'approve')?.href;
+    interface PayPalLink {
+      rel: string;
+      href: string;
+    }
+    const approvalUrl = (order.links as PayPalLink[]).find((link) => link.rel === 'approve')?.href;
 
     return {
       orderId: order.id,
@@ -373,7 +369,7 @@ export class PayPalService {
   /**
    * Capture PayPal order (complete payment)
    */
-  async captureOrder(orderId: string): Promise<any> {
+  async captureOrder(orderId: string): Promise<Record<string, unknown>> {
     const accessToken = await this.getAccessToken();
 
     const response = await fetch(
@@ -388,8 +384,6 @@ export class PayPalService {
     );
 
     if (!response.ok) {
-      const error = await response.json();
-      console.error('PayPal capture failed:', error);
       throw new WalletError(
         'Failed to capture PayPal payment',
         WalletErrorCodes.PAYMENT_GATEWAY_ERROR,
@@ -397,7 +391,7 @@ export class PayPalService {
       );
     }
 
-    return await response.json();
+    return await response.json() as Record<string, unknown>;
   }
 
   /**
@@ -440,8 +434,6 @@ export class PayPalService {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      console.error('PayPal payout failed:', error);
       throw new WalletError(
         'Failed to create PayPal payout',
         WalletErrorCodes.PAYMENT_GATEWAY_ERROR,
@@ -460,7 +452,7 @@ export class PayPalService {
   /**
    * Get payout status
    */
-  async getPayoutStatus(payoutItemId: string): Promise<any> {
+  async getPayoutStatus(payoutItemId: string): Promise<Record<string, unknown>> {
     const accessToken = await this.getAccessToken();
 
     const response = await fetch(
@@ -481,7 +473,7 @@ export class PayPalService {
       );
     }
 
-    return await response.json();
+    return await response.json() as Record<string, unknown>;
   }
 }
 

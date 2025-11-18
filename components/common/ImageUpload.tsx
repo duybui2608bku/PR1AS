@@ -118,7 +118,7 @@ export default function ImageUpload({
       } else {
         message.error(result.error || t("upload.image.messages.uploadFailed"));
       }
-    } catch (error) {
+    } catch {
       message.error(t("upload.image.messages.uploadError"));
     } finally {
       setLoading(false);
@@ -155,7 +155,7 @@ export default function ImageUpload({
       } else {
         message.error(result.error || t("upload.image.messages.deleteFailed"));
       }
-    } catch (error) {
+    } catch {
       message.error(t("upload.image.messages.deleteError"));
     } finally {
       setLoading(false);

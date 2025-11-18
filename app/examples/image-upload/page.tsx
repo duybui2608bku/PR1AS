@@ -22,11 +22,7 @@ export default function ImageUploadExamplePage() {
   // Example 3: Form with Image
   const [form] = Form.useForm();
 
-  const handleFormSubmit = async (values: any) => {
-    console.log("Form values:", values);
-    console.log("Avatar URL:", avatarUrl);
-    console.log("Product Image:", productImage);
-    
+  const handleFormSubmit = async (values: Record<string, unknown>) => {
     // Trong thực tế, bạn sẽ lưu vào database:
     // await updateProfile({ 
     //   name: values.name,
@@ -64,7 +60,6 @@ export default function ImageUploadExamplePage() {
               onChange={(url, path) => {
                 setAvatarUrl(url);
                 setAvatarPath(path);
-                console.log("Avatar changed:", { url, path });
               }}
               avatarSize={120}
               showDelete={true}
@@ -123,7 +118,6 @@ export default function ImageUploadExamplePage() {
             value={productImage}
             onChange={(url) => {
               setProductImage(url);
-              console.log("Product image changed:", url);
             }}
             imageWidth={400}
             imageHeight={300}

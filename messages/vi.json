@@ -296,7 +296,7 @@
   },
   "worker": {
     "dashboard": {
-      "title": "Bảng điều khiển Worker",
+      "title": "Worker",
       "availableJobs": "Công việc có sẵn",
       "inProgress": "Đang thực hiện",
       "completed": "Hoàn thành",
@@ -305,7 +305,7 @@
   },
   "client": {
     "dashboard": {
-      "title": "Bảng điều khiển Client",
+      "title": "Client",
       "activeJobs": "Công việc đang hoạt động",
       "inProgress": "Đang thực hiện",
       "completed": "Hoàn thành",

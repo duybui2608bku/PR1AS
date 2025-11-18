@@ -6,7 +6,7 @@
 
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Table,
   Tag,
@@ -44,34 +44,39 @@ export default function TransactionHistory() {
     dateRange?: [string, string];
   }>({});
 
-  const loadTransactions = async (page = 1) => {
-    try {
-      setLoading(true);
-      const result = await walletAPI.getTransactions({
-        type: filters.type,
-        status: filters.status,
-        date_from: filters.dateRange?.[0],
-        date_to: filters.dateRange?.[1],
-        page,
-        limit: pagination.pageSize,
-      });
+  const loadTransactions = useCallback(
+    async (page = 1) => {
+      try {
+        setLoading(true);
+        const result = await walletAPI.getTransactions({
+          type: filters.type,
+          status: filters.status,
+          date_from: filters.dateRange?.[0],
+          date_to: filters.dateRange?.[1],
+          page,
+          limit: pagination.pageSize,
+        });
 
-      setTransactions(result.transactions);
-      setPagination({
-        ...pagination,
-        current: result.page,
-        total: result.total,
-      });
-    } catch (error: unknown) {
-      message.error((error as Error).message ?? t("wallet.transaction.failed"));
-    } finally {
-      setLoading(false);
-    }
-  };
+        setTransactions(result.transactions);
+        setPagination({
+          ...pagination,
+          current: result.page,
+          total: result.total,
+        });
+      } catch (error: unknown) {
+        message.error(
+          (error as Error).message ?? t("wallet.transaction.failed")
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [filters, pagination.pageSize, t]
+  );
 
   useEffect(() => {
     loadTransactions();
-  }, [filters]);
+  }, [loadTransactions]);
 
   const columns = [
     {
@@ -142,7 +147,7 @@ export default function TransactionHistory() {
       key: "payment_method",
       render: (method?: string) =>
         method ? <Tag>{method.replace("_", " ").toUpperCase()}</Tag> : "-",
-      width: 200,
+      width: 220,
     },
     {
       title: t("wallet.transaction.description"),

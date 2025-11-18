@@ -54,7 +54,7 @@ export interface Transaction {
   job_id?: string;
   related_user_id?: string;
   description?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   created_at: string;
   completed_at?: string;
   failed_at?: string;
@@ -113,7 +113,7 @@ export interface BankTransferInfo {
 export interface PlatformSettingRow {
   id: string;
   key: string;
-  value: any;
+  value: unknown;
   description?: string;
   updated_by?: string;
   created_at: string;
@@ -187,7 +187,7 @@ export interface PaymentRequest {
 export interface DepositRequest {
   amount_usd: number;
   payment_method: 'paypal' | 'bank_transfer';
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface WithdrawalRequest {
@@ -199,7 +199,7 @@ export interface WithdrawalRequest {
     bank_name?: string;
     account_holder?: string;
   };
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface ComplaintRequest {

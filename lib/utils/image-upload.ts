@@ -2,6 +2,8 @@
  * Image Upload Utilities
  */
 
+import { getErrorMessage } from "./common";
+
 export interface UploadResponse {
   success: boolean;
   data?: {
@@ -43,10 +45,9 @@ export async function uploadImage(
 
     return result;
   } catch (error) {
-    console.error("Upload error:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Upload failed",
+      error: getErrorMessage(error, "Upload failed"),
     };
   }
 }
@@ -79,10 +80,9 @@ export async function deleteImage(filePath: string): Promise<{
 
     return result;
   } catch (error) {
-    console.error("Delete error:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Delete failed",
+      error: getErrorMessage(error, "Delete failed"),
     };
   }
 }

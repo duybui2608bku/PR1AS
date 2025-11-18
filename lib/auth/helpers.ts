@@ -45,7 +45,6 @@ export async function getUserProfile(
 
     return profile;
   } catch (error) {
-    console.error("Error getting user profile:", error);
     return null;
   }
 }

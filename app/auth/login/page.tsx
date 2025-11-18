@@ -13,7 +13,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { showMessage } from "@/lib/utils/toast";
 import { authAPI, redirectByRole } from "@/lib/auth/api-client";
+import { getErrorMessage } from "@/lib/utils/common";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher";
+import Loading from "@/components/common/Loading";
 import styles from "./page.module.css";
 
 const { Title, Text } = Typography;
@@ -42,7 +44,7 @@ function LoginForm() {
       
       router.push(redirectUrl);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Login failed";
+      const errorMessage = getErrorMessage(error, "Login failed");
       
       if (errorMessage.includes("ACCOUNT_BANNED")) {
         showMessage.error("Tài khoản của bạn đã bị khóa");
@@ -183,17 +185,18 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={
-      <div style={{ 
-        minHeight: '100vh', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        background: 'linear-gradient(135deg, #690f0f 0%, #8b1818 100%)'
-      }}>
-        <Spin size="large" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <Loading
+          variant="fullPage"
+          size="large"
+          tip="Đang tải trang đăng nhập..."
+          style={{
+            background: "linear-gradient(135deg, #690f0f 0%, #8b1818 100%)",
+          }}
+        />
+      }
+    >
       <LoginForm />
     </Suspense>
   );

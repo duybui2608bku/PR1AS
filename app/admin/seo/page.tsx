@@ -10,11 +10,12 @@ import {
   Tabs,
   Space,
   message,
-  Spin,
 } from "antd";
 import { SaveOutlined, GlobalOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import ImageUpload from "@/components/common/ImageUpload";
+import { getErrorMessage } from "@/lib/utils/common";
+import Loading from "@/components/common/Loading";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -62,8 +63,7 @@ export default function SEOSettingsPage() {
       if (response.ok && result.data) {
         form.setFieldsValue(result.data);
       }
-    } catch (error) {
-      console.error("Error fetching settings:", error);
+    } catch {
       message.warning("Could not load existing settings. Using defaults.");
     } finally {
       setFetchLoading(false);
@@ -92,10 +92,8 @@ export default function SEOSettingsPage() {
       }
 
       message.success(t("admin.seo.saveSuccess"));
-    } catch (error) {
-      console.error("Error saving settings:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+    } catch (error: unknown) {
+      const errorMessage = getErrorMessage(error, "Unknown error");
       message.error(t("admin.seo.saveFailed") + ": " + errorMessage);
     } finally {
       setLoading(false);
@@ -103,11 +101,7 @@ export default function SEOSettingsPage() {
   };
 
   if (fetchLoading) {
-    return (
-      <div style={{ textAlign: "center", padding: "50px" }}>
-        <Spin size="large" />
-      </div>
-    );
+    return <Loading variant="card" size="large" tip={t("common.loading")} />;
   }
 
   const tabItems = [

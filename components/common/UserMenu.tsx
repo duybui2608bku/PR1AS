@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { authAPI } from "@/lib/auth/api-client";
 import { showMessage } from "@/lib/utils/toast";
 import { useTranslation } from "react-i18next";
+import Loading from "@/components/common/Loading";
 
 const { Text } = Typography;
 
@@ -41,7 +42,6 @@ export default function UserMenu() {
       const profile = await authAPI.getProfile();
       setUser(profile);
     } catch (error) {
-      console.error("Error fetching profile:", error);
       // If can't fetch profile, user is not authenticated
       setUser(null);
     } finally {
@@ -55,13 +55,12 @@ export default function UserMenu() {
       showMessage.success(t("header.userMenu.logoutSuccess"));
       router.push("/auth/login");
     } catch (error) {
-      console.error("Logout error:", error);
       showMessage.error(t("header.userMenu.logoutError"));
     }
   };
 
   if (loading) {
-    return <Spin size="small" />;
+    return <Loading variant="spinner" size="small" />;
   }
 
   if (!user) {

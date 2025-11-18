@@ -51,7 +51,7 @@ export class WalletService {
     }
 
     // Convert array of settings to object
-    const settings: any = {};
+    const settings: Record<string, unknown> = {};
     data.forEach((setting) => {
       const value = setting.value;
       // Parse boolean and number values
@@ -70,7 +70,7 @@ export class WalletService {
    */
   async updatePlatformSettings(
     key: string,
-    value: any,
+    value: unknown,
     updatedBy: string
   ): Promise<void> {
     const { error } = await this.supabase
@@ -225,7 +225,7 @@ export class WalletService {
       );
     }
 
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       balance_usd: newBalance,
       pending_usd: newPending,
     };
@@ -300,7 +300,7 @@ export class WalletService {
     job_id?: string;
     related_user_id?: string;
     description?: string;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
   }): Promise<Transaction> {
     const wallet = await this.getWallet(params.user_id);
 
@@ -333,7 +333,7 @@ export class WalletService {
     status: TransactionStatus,
     errorMessage?: string
   ): Promise<Transaction> {
-    const updateData: any = { status };
+    const updateData: Record<string, unknown> = { status };
 
     if (status === 'completed') {
       updateData.completed_at = new Date().toISOString();
@@ -511,7 +511,7 @@ export class WalletService {
       try {
         await this.updateWalletBalance(employer_id, amount_usd);
       } catch (rollbackError) {
-        console.error('Failed to rollback payment:', rollbackError);
+        // Silently fail rollback - error already thrown above
       }
 
       throw new WalletError(

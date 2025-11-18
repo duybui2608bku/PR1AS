@@ -1,8 +1,51 @@
 @import "tailwindcss";
 
+/* =============================================================================
+   LOADING ANIMATIONS
+   ============================================================================= */
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.loading-full-page {
+  animation: fadeIn 0.3s ease-in;
+}
+
+.loading-spinner,
+.loading-inline,
+.loading-card {
+  animation: fadeIn 0.2s ease-in;
+}
+
 :root {
   /* Fonts */
   --font-family-base: "JetBrains Mono", monospace !important;
+  --font-family-inter: "Inter", sans-serif;
 
   /* Background Colors */
   --background: #ffffff;
@@ -83,8 +126,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
-  --font-mono: var(--font-mono);
+  --font-sans: var(--font-family-inter);
+  --font-mono: var(--font-family-base);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -101,10 +144,9 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-family-base);
+  font-family: var(--font-family-base) !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: "JetBrains Mono", monospace !important;
   margin: 0;
   padding: 0;
 }
@@ -247,7 +289,6 @@ body {
 /* Prevent text size adjustment on iOS */
 @supports (-webkit-touch-callout: none) {
   body {
-    -webkit-text-size-adjust: 100%;
   }
 }
 

@@ -22,6 +22,7 @@ import { BankOutlined, CreditCardOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import { walletAPI, walletHelpers } from "@/lib/wallet/api-client";
 import type { BankDeposit } from "@/lib/wallet/types";
+import { getErrorMessage } from "@/lib/utils/common";
 
 interface DepositModalProps {
   open: boolean;
@@ -51,8 +52,7 @@ export default function DepositModal({
       setBankDeposit(result.deposit);
       message.success(t('wallet.deposit.qrSuccess'));
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : t('wallet.deposit.failed');
+      const errorMessage = getErrorMessage(error, t('wallet.deposit.failed'));
       message.error(errorMessage);
     } finally {
       setLoading(false);
@@ -66,10 +66,7 @@ export default function DepositModal({
 
       window.location.href = result.approval_url;
     } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : t('wallet.deposit.failed');
+      const errorMessage = getErrorMessage(error, t('wallet.deposit.failed'));
       message.error(errorMessage);
       setLoading(false);
     }

@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { WalletService } from "@/lib/wallet/service";
 import { getAuthenticatedUser } from "@/lib/wallet/auth-helper";
+import { getErrorMessage } from "@/lib/utils/common";
 
 export async function GET(request: NextRequest) {
   try {
@@ -33,12 +34,12 @@ export async function GET(request: NextRequest) {
       wallet,
       summary,
     });
-  } catch (error: any) {
-    console.error("[Wallet Balance] Error:", error);
+  } catch (error: unknown) {
+    const errorMessage = getErrorMessage(error, "Failed to fetch wallet balance");
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to fetch wallet balance",
+        error: errorMessage,
       },
       { status: 500 }
     );

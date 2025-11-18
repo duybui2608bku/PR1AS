@@ -8,6 +8,7 @@ import { WalletService } from '@/lib/wallet/service';
 import { createBankTransferService, createPayPalService } from '@/lib/wallet/payment-gateways';
 import { DepositRequest } from '@/lib/wallet/types';
 import { getAuthenticatedUser } from '@/lib/wallet/auth-helper';
+import { getErrorMessage } from '@/lib/utils/common';
 
 export async function POST(request: NextRequest) {
   try {
@@ -105,12 +106,12 @@ export async function POST(request: NextRequest) {
       },
       { status: 400 }
     );
-  } catch (error: any) {
-    console.error('[Wallet Deposit] Error:', error);
+  } catch (error: unknown) {
+    const errorMessage = getErrorMessage(error, 'Failed to process deposit');
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to process deposit',
+        error: errorMessage,
       },
       { status: 500 }
     );
