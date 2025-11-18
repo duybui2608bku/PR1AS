@@ -214,6 +214,15 @@
       }
     }
   },
+  "worker": {
+    "dashboard": {
+      "title": "Bảng điều khiển Worker",
+      "availableJobs": "Công việc có sẵn",
+      "inProgress": "Đang thực hiện",
+      "completed": "Hoàn thành",
+      "totalEarnings": "Tổng thu nhập"
+    }
+  },
   "admin": {
     "sidebar": {
       "dashboard": "Bảng điều khiển",

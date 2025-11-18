@@ -25,8 +25,10 @@ import {
   HomeOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { showMessage } from "@/lib/utils/toast";
+import { authAPI, redirectByRole } from "@/lib/auth/api-client";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 import styles from "./page.module.css";
 
@@ -38,19 +40,45 @@ export default function SignupPage() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const [selectedRole, setSelectedRole] = useState<UserRole>("client");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleGoogleSignup = () => {
     showMessage.info(t("auth.signup.googleSignupComingSoon"));
   };
 
-  const handleEmailSignup = (values: {
+  const handleEmailSignup = async (values: {
     name: string;
     email: string;
     password: string;
     role: UserRole;
   }) => {
-    void values;
-    showMessage.success(t("auth.signup.signupSuccess"));
+    setLoading(true);
+    try {
+      const result = await authAPI.signUp(values.email, values.password, values.role, values.name);
+      
+      showMessage.success(t("auth.signup.signupSuccess"));
+      
+      // Redirect based on user role
+      const redirectUrl = redirectByRole(result.user.role);
+      router.push(redirectUrl);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Sign up failed";
+      
+      if (errorMessage.includes("EMAIL_ALREADY_REGISTERED_WITH_DIFFERENT_ROLE")) {
+        showMessage.error("Email này đã được đăng ký với vai trò khác. Vui lòng đăng nhập hoặc sử dụng email khác.");
+      } else if (errorMessage.includes("ACCOUNT_BANNED")) {
+        showMessage.error("Tài khoản của bạn đã bị khóa");
+        router.push("/banned");
+      } else if (errorMessage.includes("Email already registered")) {
+        showMessage.error("Email này đã được đăng ký. Vui lòng đăng nhập.");
+        router.push("/auth/login");
+      } else {
+        showMessage.error(errorMessage);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -345,6 +373,7 @@ export default function SignupPage() {
                     htmlType="submit"
                     size="large"
                     block
+                    loading={loading}
                     className={styles.submitButton}
                   >
                     {t("auth.signup.signupButton")}

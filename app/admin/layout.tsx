@@ -15,6 +15,7 @@ import {
   TagsOutlined,
 } from "@ant-design/icons";
 import { useRouter, usePathname } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import type { MenuProps } from "antd";
 import "./styles.css";
@@ -37,16 +38,7 @@ function getItem(
   } as MenuItem;
 }
 
-const menuItems: MenuItem[] = [
-  getItem("Dashboard", "/admin", <DashboardOutlined />),
-  getItem("SEO Settings", "/admin/seo", <GlobalOutlined />),
-  getItem("Content Management", "content", <FileTextOutlined />, [
-    getItem("Pages", "/admin/content/pages", <FileTextOutlined />),
-    getItem("Categories", "/admin/content/categories", <TagsOutlined />),
-  ]),
-  getItem("User Management", "/admin/users", <TeamOutlined />),
-  getItem("Settings", "/admin/settings", <SettingOutlined />),
-];
+// menu items will be created inside the component so we can use `t()` for labels
 
 export default function AdminLayout({
   children,
@@ -62,6 +54,39 @@ export default function AdminLayout({
   const router = useRouter();
   const pathname = usePathname();
   const supabase = getSupabaseClient();
+  const { t } = useTranslation();
+
+  const menuItems: MenuItem[] = [
+    getItem(t("admin.sidebar.dashboard"), "/admin", <DashboardOutlined />),
+    getItem(t("admin.sidebar.seo"), "/admin/seo", <GlobalOutlined />),
+    getItem(
+      t("admin.sidebar.content") || "Content",
+      "content",
+      <FileTextOutlined />,
+      [
+        getItem(
+          t("admin.sidebar.pages") || "Pages",
+          "/admin/content/pages",
+          <FileTextOutlined />
+        ),
+        getItem(
+          t("admin.sidebar.categories") || "Categories",
+          "/admin/content/categories",
+          <TagsOutlined />
+        ),
+      ]
+    ),
+    getItem(
+      t("admin.sidebar.users") || "User Management",
+      "/admin/users",
+      <TeamOutlined />
+    ),
+    getItem(
+      t("admin.sidebar.settings") || "Settings",
+      "/admin/settings",
+      <SettingOutlined />
+    ),
+  ];
 
   const checkAuth = useCallback(async () => {
     try {
@@ -106,7 +131,7 @@ export default function AdminLayout({
     {
       key: "profile",
       icon: <UserOutlined />,
-      label: "Profile",
+      label: t("header.userMenu.profile") || "Profile",
       onClick: () => router.push("/admin/profile"),
     },
     {
@@ -115,7 +140,7 @@ export default function AdminLayout({
     {
       key: "logout",
       icon: <LogoutOutlined />,
-      label: "Logout",
+      label: t("nav.logout") || "Logout",
       danger: true,
       onClick: handleLogout,
     },
@@ -135,7 +160,7 @@ export default function AdminLayout({
           height: "100vh",
         }}
       >
-        Loading...
+        {t("common.loading")}
       </div>
     );
   }
@@ -167,7 +192,7 @@ export default function AdminLayout({
             borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
           }}
         >
-          {collapsed ? "PR1" : "PR1AS Admin"}
+          {collapsed ? "PR1" : `${t("header.brandName")} Admin`}
         </div>
         <Menu
           theme="dark"

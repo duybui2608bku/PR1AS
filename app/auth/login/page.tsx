@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, Form, Input, Typography, Divider, ConfigProvider } from "antd";
+import { useState, Suspense } from "react";
+import { Button, Form, Input, Typography, Divider, ConfigProvider, Spin } from "antd";
 import {
   GoogleOutlined,
   MailOutlined,
@@ -8,24 +9,55 @@ import {
   HomeOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { showMessage } from "@/lib/utils/toast";
+import { authAPI, redirectByRole } from "@/lib/auth/api-client";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 import styles from "./page.module.css";
 
 const { Title, Text } = Typography;
 
-export default function LoginPage() {
+function LoginForm() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleGoogleLogin = () => {
     showMessage.info(t("auth.login.googleLoginComingSoon"));
   };
 
-  const handleEmailLogin = (values: { email: string; password: string }) => {
-    void values;
-    showMessage.success(t("auth.login.loginSuccess"));
+  const handleEmailLogin = async (values: { email: string; password: string }) => {
+    setLoading(true);
+    try {
+      const result = await authAPI.login(values.email, values.password);
+      
+      showMessage.success(t("auth.login.loginSuccess"));
+      
+      // Check if there's a redirect parameter in the URL
+      const redirectParam = searchParams.get("redirect");
+      const redirectUrl = redirectParam || redirectByRole(result.user.role);
+      
+      router.push(redirectUrl);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Login failed";
+      
+      if (errorMessage.includes("ACCOUNT_BANNED")) {
+        showMessage.error("Tài khoản của bạn đã bị khóa");
+        router.push("/banned");
+      } else if (errorMessage.includes("NO_PROFILE")) {
+        showMessage.error("Tài khoản không tồn tại. Vui lòng đăng ký.");
+        router.push("/auth/signup");
+      } else if (errorMessage.includes("Invalid email or password")) {
+        showMessage.error("Email hoặc mật khẩu không đúng");
+      } else {
+        showMessage.error(errorMessage);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -126,6 +158,7 @@ export default function LoginPage() {
                 htmlType="submit"
                 size="large"
                 block
+                loading={loading}
                 className={styles.submitButton}
               >
                 {t("auth.login.loginButton")}
@@ -145,5 +178,23 @@ export default function LoginPage() {
         </div>
       </div>
     </ConfigProvider>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, #690f0f 0%, #8b1818 100%)'
+      }}>
+        <Spin size="large" />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }
