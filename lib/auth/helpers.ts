@@ -8,6 +8,7 @@ import { UserRole } from "./api-client";
 export interface UserProfile {
   id: string;
   email: string;
+  full_name?: string;
   role: UserRole;
   status: "active" | "banned";
 }
@@ -15,7 +16,9 @@ export interface UserProfile {
 /**
  * Get user profile from token (server-side)
  */
-export async function getUserProfile(token: string): Promise<UserProfile | null> {
+export async function getUserProfile(
+  token: string
+): Promise<UserProfile | null> {
   try {
     const supabase = createAdminClient();
 

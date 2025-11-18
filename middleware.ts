@@ -15,11 +15,11 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get("sb-access-token")?.value;
 
   // Public routes that don't require authentication
-  const publicRoutes = ["/", "/login", "/signup", "/banned"];
+  const publicRoutes = ["/", "/auth/login", "/auth/signup", "/banned"];
   const isPublicRoute = publicRoutes.some((route) => pathname === route);
 
   // Auth routes (login, signup) - redirect if already authenticated
-  const authRoutes = ["/login", "/signup"];
+  const authRoutes = ["/auth/login", "/auth/signup"];
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
 
   // Protected route patterns
@@ -76,7 +76,7 @@ export async function middleware(request: NextRequest) {
   if (isProtectedRoute) {
     if (!token) {
       // Not authenticated, redirect to login
-      const loginUrl = new URL("/login", request.url);
+      const loginUrl = new URL("/auth/login", request.url);
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }
@@ -93,7 +93,7 @@ export async function middleware(request: NextRequest) {
 
       if (authError || !user) {
         // Invalid token, redirect to login
-        const loginUrl = new URL("/login", request.url);
+        const loginUrl = new URL("/auth/login", request.url);
         loginUrl.searchParams.set("redirect", pathname);
         return NextResponse.redirect(loginUrl);
       }
@@ -107,7 +107,7 @@ export async function middleware(request: NextRequest) {
 
       if (profileError || !profile) {
         // No profile, redirect to login
-        const loginUrl = new URL("/login", request.url);
+        const loginUrl = new URL("/auth/login", request.url);
         loginUrl.searchParams.set("redirect", pathname);
         return NextResponse.redirect(loginUrl);
       }
@@ -152,7 +152,7 @@ export async function middleware(request: NextRequest) {
     } catch (error) {
       console.error("Middleware error:", error);
       // On error, redirect to login
-      const loginUrl = new URL("/login", request.url);
+      const loginUrl = new URL("/auth/login", request.url);
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }

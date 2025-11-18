@@ -1,41 +1,33 @@
-import { createClient } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase/server";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-// Create admin client with service role
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-});
-
-/**
- * GET /api/auth/profile
- * Get current user's profile
- *
- * Requires: Authorization header with Bearer token
- */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get("authorization");
+    // Try to get token from cookies first (for httpOnly cookie authentication)
+    let token = request.cookies.get("sb-access-token")?.value;
 
-    if (!authHeader) {
+    // If no cookie, check Authorization header (for client-side auth)
+    if (!token) {
+      const authHeader = request.headers.get("Authorization");
+      if (authHeader) {
+        token = authHeader.replace("Bearer ", "");
+      }
+    }
+
+    if (!token) {
       return NextResponse.json(
-        { error: "Authorization header required" },
+        { error: "Not authenticated" },
         { status: 401 }
       );
     }
 
-    const token = authHeader.replace("Bearer ", "");
+    const supabase = createAdminClient();
 
     // Get user from token
     const {
       data: { user },
       error: authError,
-    } = await supabaseAdmin.auth.getUser(token);
+    } = await supabase.auth.getUser(token);
 
     if (authError || !user) {
       return NextResponse.json(
@@ -44,29 +36,26 @@ export async function GET(request: Request) {
       );
     }
 
-    // Get user profile
-    const { data: profile, error: profileError } = await supabaseAdmin
+    // Get profile
+    const { data: profile, error: profileError } = await supabase
       .from("user_profiles")
       .select("*")
       .eq("id", user.id)
       .single();
 
-    if (profileError) {
-      if (profileError.code === "PGRST116") {
-        return NextResponse.json(
-          {
-            error: "NO_PROFILE",
-            message: "Profile not found",
-            userId: user.id,
-            email: user.email,
-          },
-          { status: 404 }
-        );
-      }
-      throw profileError;
+    if (profileError || !profile) {
+      return NextResponse.json(
+        {
+          error: "NO_PROFILE",
+          message: "Profile not found",
+          userId: user.id,
+          email: user.email,
+        },
+        { status: 404 }
+      );
     }
 
-    // Check if banned
+    // Check if account is banned
     if (profile.status === "banned") {
       return NextResponse.json(
         {
@@ -82,6 +71,7 @@ export async function GET(request: Request) {
       profile: {
         id: profile.id,
         email: profile.email,
+        full_name: profile.full_name,
         role: profile.role,
         status: profile.status,
         created_at: profile.created_at,
@@ -89,69 +79,11 @@ export async function GET(request: Request) {
       },
     });
   } catch (error) {
-    console.error("Error getting profile:", error);
+    console.error("Get profile error:", error);
     return NextResponse.json(
-      { error: "Failed to get profile" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
 }
 
-/**
- * PATCH /api/auth/profile
- * Update current user's profile (limited fields)
- *
- * Requires: Authorization header with Bearer token
- * Body: { ... updatable fields ... }
- * Note: role and status cannot be changed by user
- */
-export async function PATCH(request: Request) {
-  try {
-    const authHeader = request.headers.get("authorization");
-
-    if (!authHeader) {
-      return NextResponse.json(
-        { error: "Authorization header required" },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.replace("Bearer ", "");
-
-    // Get user from token
-    const {
-      data: { user },
-      error: authError,
-    } = await supabaseAdmin.auth.getUser(token);
-
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: "Invalid or expired token" },
-        { status: 401 }
-      );
-    }
-
-    const body = await request.json();
-
-    // Prevent updating role and status
-    if (body.role || body.status) {
-      return NextResponse.json(
-        { error: "Cannot update role or status" },
-        { status: 403 }
-      );
-    }
-
-    // For now, we don't have other fields to update
-    // This is a placeholder for future profile fields
-    return NextResponse.json({
-      success: true,
-      message: "Profile updated (no fields to update yet)",
-    });
-  } catch (error) {
-    console.error("Error updating profile:", error);
-    return NextResponse.json(
-      { error: "Failed to update profile" },
-      { status: 500 }
-    );
-  }
-}

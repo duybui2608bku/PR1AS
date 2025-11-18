@@ -194,6 +194,15 @@
       }
     }
   },
+  "worker": {
+    "dashboard": {
+      "title": "Worker Dashboard",
+      "availableJobs": "Available Jobs",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "totalEarnings": "Total Earnings"
+    }
+  },
   "banned": {
     "title": "Account Suspended",
     "description": "Your account has been suspended due to violation of our",

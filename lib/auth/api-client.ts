@@ -10,6 +10,7 @@ export type UserRole = "client" | "worker" | "admin";
 export interface UserProfile {
   id: string;
   email: string;
+  full_name?: string;
   role: UserRole;
   status: "active" | "banned";
   created_at?: string;
@@ -39,13 +40,19 @@ export const authAPI = {
   /**
    * Sign up with email/password
    */
-  async signUp(email: string, password: string, role: UserRole) {
+  async signUp(
+    email: string,
+    password: string,
+    role: UserRole,
+    fullName?: string
+  ) {
     const response = await fetch("/api/auth/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password, role }),
+      credentials: "include", // Ensure cookies are sent/received
+      body: JSON.stringify({ email, password, role, fullName }),
     });
 
     if (!response.ok) {
@@ -53,7 +60,12 @@ export const authAPI = {
       throw new Error(error.message || error.error || "Sign up failed");
     }
 
-    return response.json();
+    const data = await response.json();
+
+    // Small delay to ensure cookies are properly set before redirect
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    return data;
   },
 
   /**
@@ -109,6 +121,7 @@ export const authAPI = {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include", // Ensure cookies are sent/received
       body: JSON.stringify({ email, password }),
     });
 
@@ -117,7 +130,12 @@ export const authAPI = {
       throw new Error(error.message || error.error || "Login failed");
     }
 
-    return response.json();
+    const data = await response.json();
+
+    // Small delay to ensure cookies are properly set before redirect
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    return data;
   },
 
   /**
@@ -132,7 +150,10 @@ export const authAPI = {
     if (error) throw error;
 
     // Also call our API endpoint for any server-side cleanup
-    await fetch("/api/auth/logout", { method: "POST" });
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include", // Ensure cookies are sent for deletion
+    });
 
     return { success: true };
   },
@@ -141,11 +162,9 @@ export const authAPI = {
    * Get current user's profile
    */
   async getProfile(): Promise<UserProfile> {
-    const authHeader = await getAuthHeader();
+    // Don't require Authorization header - API will read from httpOnly cookies
     const response = await fetch("/api/auth/profile", {
-      headers: {
-        Authorization: authHeader,
-      },
+      credentials: "include", // Important: Send cookies with request
     });
 
     if (!response.ok) {
@@ -177,7 +196,9 @@ export const authAPI = {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || error.error || "Failed to create profile");
+      throw new Error(
+        error.message || error.error || "Failed to create profile"
+      );
     }
 
     return response.json();
@@ -247,7 +268,10 @@ export function redirectByRole(role: UserRole): string {
 /**
  * Check if user has required role
  */
-export function hasRole(userRole: UserRole, requiredRole: UserRole | UserRole[]): boolean {
+export function hasRole(
+  userRole: UserRole,
+  requiredRole: UserRole | UserRole[]
+): boolean {
   if (Array.isArray(requiredRole)) {
     return requiredRole.includes(userRole);
   }

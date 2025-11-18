@@ -1,32 +1,9 @@
-import { createClient } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase/server";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-// Create admin client with service role
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-});
-
-interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-/**
- * POST /api/auth/login
- * Login with email/password
- *
- * Body: { email, password }
- */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const body: LoginRequest = await request.json();
-    const { email, password } = body;
+    const { email, password } = await request.json();
 
     // Validate input
     if (!email || !password) {
@@ -36,14 +13,16 @@ export async function POST(request: Request) {
       );
     }
 
-    // Attempt to sign in
-    const { data: authData, error: signInError } =
-      await supabaseAdmin.auth.signInWithPassword({
+    const supabase = createAdminClient();
+
+    // Authenticate with Supabase
+    const { data: authData, error: authError } =
+      await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-    if (signInError) {
+    if (authError) {
       return NextResponse.json(
         { error: "Invalid email or password" },
         { status: 401 }
@@ -57,15 +36,14 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check user profile
-    const { data: profile, error: profileError } = await supabaseAdmin
+    // Get user profile
+    const { data: profile, error: profileError } = await supabase
       .from("user_profiles")
-      .select("role, status")
+      .select("*")
       .eq("id", authData.user.id)
       .single();
 
-    if (profileError) {
-      // Profile doesn't exist - this shouldn't happen with proper signup
+    if (profileError || !profile) {
       return NextResponse.json(
         {
           error: "NO_PROFILE",
@@ -77,7 +55,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if banned
+    // Check if account is banned
     if (profile.status === "banned") {
       return NextResponse.json(
         {
@@ -88,12 +66,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Return user data with profile
-    return NextResponse.json({
+    // Create response with cookies
+    const response = NextResponse.json({
       success: true,
       user: {
-        id: authData.user.id,
-        email: authData.user.email,
+        id: profile.id,
+        email: profile.email,
         role: profile.role,
         status: profile.status,
       },
@@ -102,8 +80,32 @@ export async function POST(request: Request) {
         refresh_token: authData.session?.refresh_token,
       },
     });
+
+    // Set authentication cookies
+    if (authData.session) {
+      response.cookies.set("sb-access-token", authData.session.access_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: "/",
+      });
+
+      response.cookies.set("sb-refresh-token", authData.session.refresh_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 30, // 30 days
+        path: "/",
+      });
+    }
+
+    return response;
   } catch (error) {
-    console.error("Error in login:", error);
-    return NextResponse.json({ error: "Login failed" }, { status: 500 });
+    console.error("Login error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

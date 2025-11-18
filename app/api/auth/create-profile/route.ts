@@ -1,34 +1,10 @@
-import { createClient } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase/server";
+import { UserRole } from "@/lib/auth/api-client";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-// Create admin client with service role
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-});
-
-export type UserRole = "client" | "worker";
-
-interface CreateProfileRequest {
-  role: UserRole;
-}
-
-/**
- * POST /api/auth/create-profile
- * Create profile for authenticated user who doesn't have one yet
- * (e.g., after OAuth login)
- *
- * Requires: Authorization header with Bearer token
- * Body: { role }
- */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const authHeader = request.headers.get("authorization");
+    const authHeader = request.headers.get("Authorization");
 
     if (!authHeader) {
       return NextResponse.json(
@@ -37,13 +13,23 @@ export async function POST(request: Request) {
       );
     }
 
+    const { role } = await request.json();
+
+    if (!role || !["client", "worker"].includes(role)) {
+      return NextResponse.json(
+        { error: "Invalid role. Must be 'client' or 'worker'" },
+        { status: 400 }
+      );
+    }
+
     const token = authHeader.replace("Bearer ", "");
+    const supabase = createAdminClient();
 
     // Get user from token
     const {
       data: { user },
       error: authError,
-    } = await supabaseAdmin.auth.getUser(token);
+    } = await supabase.auth.getUser(token);
 
     if (authError || !user) {
       return NextResponse.json(
@@ -52,21 +38,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const body: CreateProfileRequest = await request.json();
-    const { role } = body;
-
-    // Validate role
-    if (!role || !["client", "worker"].includes(role)) {
-      return NextResponse.json(
-        { error: "Role must be either 'client' or 'worker'" },
-        { status: 400 }
-      );
-    }
-
     // Check if profile already exists
-    const { data: existingProfile } = await supabaseAdmin
+    const { data: existingProfile } = await supabase
       .from("user_profiles")
-      .select("role")
+      .select("*")
       .eq("id", user.id)
       .single();
 
@@ -81,42 +56,59 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if email already has a different role
-    const { data: emailCheck } = await supabaseAdmin
+    // Check if email is already used with different role
+    const { data: emailProfile } = await supabase
       .from("user_profiles")
-      .select("role")
-      .eq("email", user.email!)
+      .select("role, status")
+      .eq("email", user.email)
       .single();
 
-    if (emailCheck && emailCheck.role !== role && emailCheck.role !== "admin") {
-      return NextResponse.json(
-        {
-          error: "EMAIL_ALREADY_REGISTERED_WITH_DIFFERENT_ROLE",
-          message: `Email này đã được đăng ký với vai trò ${emailCheck.role.toUpperCase()}. Bạn không thể tạo tài khoản ${role.toUpperCase()} với email này.`,
-          existingRole: emailCheck.role,
-        },
-        { status: 409 }
-      );
+    if (emailProfile) {
+      if (emailProfile.status === "banned") {
+        return NextResponse.json(
+          {
+            error: "ACCOUNT_BANNED",
+            message: "Tài khoản này đã bị khóa",
+          },
+          { status: 403 }
+        );
+      }
+
+      if (emailProfile.role !== role) {
+        const roleNames: Record<UserRole, string> = {
+          client: "KHÁCH HÀNG",
+          worker: "THỢ",
+          admin: "ADMIN",
+        };
+
+        return NextResponse.json(
+          {
+            error: "EMAIL_ALREADY_REGISTERED_WITH_DIFFERENT_ROLE",
+            message: `Email này đã được đăng ký với vai trò ${roleNames[emailProfile.role as UserRole]}. Vui lòng đăng nhập hoặc sử dụng email khác.`,
+            existingRole: emailProfile.role,
+          },
+          { status: 409 }
+        );
+      }
     }
 
     // Create profile
-    const { error: createError } = await supabaseAdmin
+    const { error: insertError } = await supabase
       .from("user_profiles")
       .insert({
         id: user.id,
-        email: user.email!,
+        email: user.email,
         role,
         status: "active",
       });
 
-    if (createError) {
-      throw createError;
+    if (insertError) {
+      console.error("Insert error:", insertError);
+      return NextResponse.json(
+        { error: "Failed to create profile" },
+        { status: 500 }
+      );
     }
-
-    // Update user metadata
-    await supabaseAdmin.auth.admin.updateUserById(user.id, {
-      user_metadata: { role },
-    });
 
     return NextResponse.json({
       success: true,
@@ -128,10 +120,11 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    console.error("Error creating profile:", error);
+    console.error("Create profile error:", error);
     return NextResponse.json(
-      { error: "Failed to create profile" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
 }
+

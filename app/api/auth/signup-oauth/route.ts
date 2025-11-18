@@ -1,77 +1,46 @@
-import { createClient } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-// Create admin client with service role
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-});
-
-export type UserRole = "client" | "worker";
-
-interface SignUpOAuthRequest {
-  role: UserRole;
-  provider: "google";
-  redirectTo?: string;
-}
-
-/**
- * POST /api/auth/signup-oauth
- * Initiate OAuth signup with role selection
- *
- * Body: { role, provider, redirectTo? }
- * Returns: { url } - Redirect URL for OAuth flow
- */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const body: SignUpOAuthRequest = await request.json();
-    const { role, provider, redirectTo } = body;
+    const { role, provider = "google", redirectTo } = await request.json();
 
-    // Validate input
-    if (!role || !provider) {
+    // Validate role
+    if (!role || !["client", "worker"].includes(role)) {
       return NextResponse.json(
-        { error: "Role and provider are required" },
+        { error: "Invalid role. Must be 'client' or 'worker'" },
         { status: 400 }
       );
     }
 
-    if (!["client", "worker"].includes(role)) {
-      return NextResponse.json(
-        { error: "Role must be either 'client' or 'worker'" },
-        { status: 400 }
-      );
-    }
-
+    // Validate provider
     if (provider !== "google") {
       return NextResponse.json(
-        { error: "Only Google OAuth is supported" },
+        { error: "Only 'google' provider is supported" },
         { status: 400 }
       );
     }
 
-    // Generate OAuth URL with role in state
-    const callbackUrl = redirectTo || `${request.headers.get("origin")}/auth/callback`;
-
-    // The role will be passed via query params to the callback
-    const callbackWithRole = `${callbackUrl}?role=${role}`;
+    // Generate callback URL with role parameter
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const defaultRedirect = `${baseUrl}/auth/callback`;
+    const callbackUrl = redirectTo || defaultRedirect;
+    
+    // Add role as query parameter
+    const urlWithRole = `${callbackUrl}${callbackUrl.includes('?') ? '&' : '?'}role=${role}`;
 
     return NextResponse.json({
       success: true,
       provider,
       role,
-      callbackUrl: callbackWithRole,
+      callbackUrl: urlWithRole,
       message: "Use Supabase client to call signInWithOAuth on the frontend",
     });
   } catch (error) {
-    console.error("Error in signup-oauth:", error);
+    console.error("OAuth signup prep error:", error);
     return NextResponse.json(
-      { error: "Failed to initiate OAuth signup" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
 }
+

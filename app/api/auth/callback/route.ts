@@ -1,153 +1,144 @@
-import { createClient } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase/server";
+import { UserRole } from "@/lib/auth/api-client";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-// Create admin client with service role
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-});
-
-/**
- * POST /api/auth/callback
- * Handle OAuth callback and create/update profile
- *
- * Body: { userId, email, role }
- * This should be called after OAuth redirect on the client
- */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { userId, email, role } = body;
+    const { userId, email, role } = await request.json();
 
-    // Validate input
     if (!userId || !email) {
       return NextResponse.json(
-        { error: "User ID and email are required" },
+        { error: "UserId and email are required" },
         { status: 400 }
       );
     }
 
-    // Check if profile already exists
-    const { data: existingProfile, error: profileCheckError } =
-      await supabaseAdmin
-        .from("user_profiles")
-        .select("role, status")
-        .eq("id", userId)
-        .single();
+    const supabase = createAdminClient();
 
-    if (profileCheckError && profileCheckError.code !== "PGRST116") {
-      throw profileCheckError;
-    }
+    // Check if profile exists
+    const { data: existingProfile } = await supabase
+      .from("user_profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
 
-    // Case A: Profile doesn't exist - create new
-    if (!existingProfile) {
-      if (!role) {
+    // If profile exists, return it
+    if (existingProfile) {
+      // Check if banned
+      if (existingProfile.status === "banned") {
         return NextResponse.json(
           {
-            error: "NO_PROFILE_NO_ROLE",
-            message: "Email này chưa có tài khoản. Bạn muốn đăng ký Client hay Worker?",
-            userId,
-            email,
+            error: "ACCOUNT_BANNED",
+            message: "Tài khoản này đã bị khóa",
           },
-          { status: 404 }
+          { status: 403 }
         );
-      }
-
-      if (!["client", "worker"].includes(role)) {
-        return NextResponse.json(
-          { error: "Role must be either 'client' or 'worker'" },
-          { status: 400 }
-        );
-      }
-
-      // Check if email already exists with different role
-      const { data: emailCheck } = await supabaseAdmin
-        .from("user_profiles")
-        .select("role")
-        .eq("email", email)
-        .single();
-
-      if (emailCheck && emailCheck.role !== role && emailCheck.role !== "admin") {
-        return NextResponse.json(
-          {
-            error: "EMAIL_ALREADY_REGISTERED_WITH_DIFFERENT_ROLE",
-            message: `Email này đã được đăng ký với vai trò ${emailCheck.role.toUpperCase()}. Bạn không thể tạo tài khoản ${role.toUpperCase()} với email này.`,
-            existingRole: emailCheck.role,
-          },
-          { status: 409 }
-        );
-      }
-
-      // Create new profile
-      const { error: createError } = await supabaseAdmin
-        .from("user_profiles")
-        .insert({
-          id: userId,
-          email,
-          role,
-          status: "active",
-        });
-
-      if (createError) {
-        throw createError;
       }
 
       return NextResponse.json({
         success: true,
-        created: true,
+        created: false,
         user: {
-          id: userId,
-          email,
-          role,
-          status: "active",
+          id: existingProfile.id,
+          email: existingProfile.email,
+          role: existingProfile.role,
+          status: existingProfile.status,
         },
       });
     }
 
-    // Case B: Profile exists but different role
-    if (role && existingProfile.role !== role && existingProfile.role !== "admin") {
+    // No profile exists, need to create one
+    if (!role) {
+      // Need role to create profile
       return NextResponse.json(
         {
-          error: "EMAIL_ALREADY_REGISTERED_WITH_DIFFERENT_ROLE",
-          message: `Email này đã được đăng ký với vai trò ${existingProfile.role.toUpperCase()}. Bạn không thể tạo tài khoản ${role.toUpperCase()} với email này.`,
-          existingRole: existingProfile.role,
+          error: "NO_PROFILE_NO_ROLE",
+          message: "Email này chưa có tài khoản. Bạn muốn đăng ký Client hay Worker?",
+          userId,
+          email,
         },
-        { status: 409 }
+        { status: 404 }
       );
     }
 
-    // Case C: Profile exists and is banned
-    if (existingProfile.status === "banned") {
+    // Validate role
+    if (!["client", "worker"].includes(role)) {
       return NextResponse.json(
-        {
-          error: "ACCOUNT_BANNED",
-          message: "Tài khoản này đã bị khóa",
-        },
-        { status: 403 }
+        { error: "Invalid role. Must be 'client' or 'worker'" },
+        { status: 400 }
       );
     }
 
-    // Case D: Valid existing profile
+    // Check if email is already used with different account
+    const { data: emailProfile } = await supabase
+      .from("user_profiles")
+      .select("role, status")
+      .eq("email", email)
+      .single();
+
+    if (emailProfile) {
+      if (emailProfile.status === "banned") {
+        return NextResponse.json(
+          {
+            error: "ACCOUNT_BANNED",
+            message: "Tài khoản này đã bị khóa",
+          },
+          { status: 403 }
+        );
+      }
+
+      if (emailProfile.role !== role) {
+        const roleNames: Record<UserRole, string> = {
+          client: "KHÁCH HÀNG",
+          worker: "THỢ",
+          admin: "ADMIN",
+        };
+
+        return NextResponse.json(
+          {
+            error: "EMAIL_ALREADY_REGISTERED_WITH_DIFFERENT_ROLE",
+            message: `Email này đã được đăng ký với vai trò ${roleNames[emailProfile.role as UserRole]}. Vui lòng đăng nhập hoặc sử dụng email khác.`,
+            existingRole: emailProfile.role,
+          },
+          { status: 409 }
+        );
+      }
+    }
+
+    // Create new profile
+    const { error: insertError } = await supabase
+      .from("user_profiles")
+      .insert({
+        id: userId,
+        email,
+        role,
+        status: "active",
+      });
+
+    if (insertError) {
+      console.error("Insert error:", insertError);
+      return NextResponse.json(
+        { error: "Failed to create profile" },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json({
       success: true,
-      created: false,
+      created: true,
       user: {
         id: userId,
         email,
-        role: existingProfile.role,
-        status: existingProfile.status,
+        role,
+        status: "active",
       },
     });
   } catch (error) {
-    console.error("Error in callback:", error);
+    console.error("Callback error:", error);
     return NextResponse.json(
-      { error: "Failed to process callback" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
 }
+

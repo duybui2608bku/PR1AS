@@ -1,38 +1,43 @@
 "use client";
 
-import React, { useState } from "react";
-import { Layout, Button, Avatar, Dropdown, Drawer } from "antd";
+import { useState, useEffect } from "react";
+import { Layout, Button, Avatar, Drawer } from "antd";
 import { UserOutlined, MenuOutlined } from "@ant-design/icons";
-import type { MenuProps } from "antd";
 import Link from "next/link";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher";
+import UserMenu from "@/components/common/UserMenu";
 import { useTranslation } from "react-i18next";
+import { authAPI } from "@/lib/auth/api-client";
 
 const { Header: AntHeader } = Layout;
 
 export default function Header() {
-  const [isAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t } = useTranslation();
 
-  const userMenuItems: MenuProps["items"] = [
-    {
-      key: "profile",
-      label: <Link href="/profile">Hồ sơ của tôi</Link>,
-    },
-    {
-      key: "bookings",
-      label: <Link href="/bookings">Đặt chỗ</Link>,
-    },
-    {
-      type: "divider",
-    },
-    {
-      key: "logout",
-      label: "Đăng xuất",
-      danger: true,
-    },
-  ];
+  useEffect(() => {
+    let mounted = true;
+
+    const checkAuth = async () => {
+      try {
+        const profile = await authAPI.getProfile();
+        if (mounted) {
+          setIsAuthenticated(!!profile);
+        }
+      } catch {
+        if (mounted) {
+          setIsAuthenticated(false);
+        }
+      }
+    };
+
+    checkAuth();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <>
@@ -83,34 +88,7 @@ export default function Header() {
           <LanguageSwitcher />
 
           {isAuthenticated ? (
-            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  padding: "5px 5px 5px 12px",
-                  border: "1px solid #ddd",
-                  borderRadius: "21px",
-                  cursor: "pointer",
-                  transition: "box-shadow 0.2s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    "0 2px 4px rgba(0,0,0,0.18)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-              >
-                <MenuOutlined style={{ fontSize: "16px" }} />
-                <Avatar
-                  size={32}
-                  icon={<UserOutlined />}
-                  style={{ backgroundColor: "#717171" }}
-                />
-              </div>
-            </Dropdown>
+            <UserMenu />
           ) : (
             <div
               style={{
