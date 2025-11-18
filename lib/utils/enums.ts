@@ -136,6 +136,77 @@ export enum ErrorMessage {
 // COMMON CONSTANTS
 // =============================================================================
 
+// =============================================================================
+// WORKER PROFILE STATUS
+// =============================================================================
+
+export enum WorkerProfileStatus {
+  DRAFT = 'draft',
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  REJECTED = 'rejected',
+  PUBLISHED = 'published',
+}
+
+// =============================================================================
+// AVAILABILITY TYPES
+// =============================================================================
+
+export enum AvailabilityType {
+  ALL_DAY = 'all_day',
+  TIME_RANGE = 'time_range',
+  NOT_AVAILABLE = 'not_available',
+}
+
+// =============================================================================
+// WORKER IMAGE TYPES
+// =============================================================================
+
+export enum WorkerImageType {
+  AVATAR = 'avatar',
+  GALLERY = 'gallery',
+}
+
+// =============================================================================
+// TAG TYPES
+// =============================================================================
+
+export enum TagType {
+  INTEREST = 'interest',
+  HOBBY = 'hobby',
+  SKILL = 'skill',
+}
+
+// =============================================================================
+// CURRENCIES
+// =============================================================================
+
+export enum Currency {
+  USD = 'USD',
+  VND = 'VND',
+  JPY = 'JPY',
+  KRW = 'KRW',
+  CNY = 'CNY',
+}
+
+// =============================================================================
+// DAY OF WEEK
+// =============================================================================
+
+export enum DayOfWeek {
+  MONDAY = 1,
+  TUESDAY = 2,
+  WEDNESDAY = 3,
+  THURSDAY = 4,
+  FRIDAY = 5,
+  SATURDAY = 6,
+  SUNDAY = 7,
+}
+
+// =============================================================================
+// COMMON CONSTANTS
+// =============================================================================
+
 export const DEFAULT_CURRENCY = 'USD';
 export const USD_TO_VND_RATE = 24000;
 export const DEPOSIT_EXPIRY_MINUTES = 30;
@@ -147,4 +218,12 @@ export const VALID_IMAGE_TYPES = [
   'image/webp',
   'image/gif',
 ] as const;
+
+// Worker pricing constants
+export const HOURS_PER_DAY = 8;
+export const HOURS_PER_WEEK = 56; // 8 hours × 7 days
+export const HOURS_PER_MONTH = 160; // 8 hours × 20 working days
+export const MAX_DISCOUNT_PERCENT = 100;
+export const DEFAULT_PLATFORM_FEE_PERCENT = 10;
+export const DEFAULT_INSURANCE_FEE_PERCENT = 2;
 
