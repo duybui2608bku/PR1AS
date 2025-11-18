@@ -4,10 +4,12 @@ import { useState, useEffect } from "react";
 import { Layout, Button, Avatar, Drawer } from "antd";
 import { UserOutlined, MenuOutlined } from "@ant-design/icons";
 import Link from "next/link";
+import Image from "next/image";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 import UserMenu from "@/components/common/UserMenu";
 import { useTranslation } from "react-i18next";
 import { authAPI } from "@/lib/auth/api-client";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const { Header: AntHeader } = Layout;
 
@@ -15,6 +17,7 @@ export default function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t } = useTranslation();
+  const { settings, loading: settingsLoading } = useSiteSettings();
 
   useEffect(() => {
     let mounted = true;
@@ -58,18 +61,58 @@ export default function Header() {
         }}
       >
         {/* Logo */}
-        <Link href="/" style={{ display: "flex", alignItems: "center" }}>
-          <div
-            style={{
-              fontSize: "20px",
-              fontWeight: "bold",
-              color: "#FF385C",
-              letterSpacing: "-0.5px",
-            }}
-            className="sm:text-2xl"
-          >
-            PR1AS
-          </div>
+        <Link
+          href="/"
+          style={{ display: "flex", alignItems: "center", gap: "8px" }}
+        >
+          {settings && settings.headerLogo && settings.headerLogo !== "/logo.png" ? (
+            settings.headerLogo.startsWith("http") ? (
+              // External URL (Supabase storage) - use unoptimized
+              <Image
+                src={settings.headerLogo}
+                alt={settings.siteName || "Logo"}
+                width={120}
+                height={40}
+                style={{ objectFit: "contain", height: "auto" }}
+                unoptimized
+                priority
+              />
+            ) : (
+              // Local path
+              <Image
+                src={settings.headerLogo}
+                alt={settings.siteName || "Logo"}
+                width={120}
+                height={40}
+                style={{ objectFit: "contain", height: "auto" }}
+                priority
+              />
+            )
+          ) : (
+            <div
+              style={{
+                fontSize: "20px",
+                fontWeight: "bold",
+                color: "#FF385C",
+                letterSpacing: "-0.5px",
+              }}
+              className="sm:text-2xl"
+            >
+              {settings?.siteName || "PR1AS"}
+            </div>
+          )}
+          {settings?.headerTagline && (
+            <span
+              style={{
+                fontSize: "12px",
+                color: "#666",
+                display: "none",
+              }}
+              className="hidden lg:inline"
+            >
+              {settings.headerTagline}
+            </span>
+          )}
         </Link>
 
         {/* Desktop Menu */}
