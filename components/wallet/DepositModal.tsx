@@ -19,6 +19,7 @@ import {
   Alert,
 } from "antd";
 import { BankOutlined, CreditCardOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import { walletAPI, walletHelpers } from "@/lib/wallet/api-client";
 import type { BankDeposit } from "@/lib/wallet/types";
 
@@ -33,6 +34,7 @@ export default function DepositModal({
   onClose,
   onSuccess,
 }: DepositModalProps) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [bankDeposit, setBankDeposit] = useState<BankDeposit | null>(null);
   const [form] = Form.useForm();
@@ -47,10 +49,10 @@ export default function DepositModal({
       );
 
       setBankDeposit(result.deposit);
-      message.success("QR code generated! Please scan to complete payment.");
+      message.success(t('wallet.deposit.qrSuccess'));
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Failed to create deposit";
+        error instanceof Error ? error.message : t('wallet.deposit.failed');
       message.error(errorMessage);
     } finally {
       setLoading(false);
@@ -67,7 +69,7 @@ export default function DepositModal({
       const errorMessage =
         error instanceof Error
           ? error.message
-          : "Failed to create PayPal deposit";
+          : t('wallet.deposit.failed');
       message.error(errorMessage);
       setLoading(false);
     }
@@ -88,7 +90,7 @@ export default function DepositModal({
 
   return (
     <Modal
-      title="Deposit Money"
+      title={t('wallet.deposit.title')}
       open={open}
       onCancel={handleClose}
       footer={null}
@@ -101,7 +103,7 @@ export default function DepositModal({
               key: "bank",
               label: (
                 <span>
-                  <BankOutlined /> Bank Transfer
+                  <BankOutlined /> {t('wallet.deposit.bankTransfer')}
                 </span>
               ),
               children: (
@@ -111,21 +113,21 @@ export default function DepositModal({
                   onFinish={handleBankDeposit}
                 >
                   <Form.Item
-                    label="Amount (USD)"
+                    label={t('wallet.deposit.amount')}
                     name="amount_usd"
                     rules={[
-                      { required: true, message: "Please enter amount" },
+                      { required: true, message: t('wallet.deposit.amountRequired') },
                       {
                         type: "number",
                         min: 10,
-                        message: "Minimum deposit is $10",
+                        message: t('wallet.deposit.minimumDeposit'),
                       },
                     ]}
                   >
                     <InputNumber
                       style={{ width: "100%" }}
                       prefix="$"
-                      placeholder="Enter amount"
+                      placeholder={t('wallet.deposit.amountPlaceholder')}
                       min={10}
                       step={10}
                     />
@@ -133,8 +135,8 @@ export default function DepositModal({
 
                   <Form.Item>
                     <Alert
-                      message="Bank Transfer via QR Code"
-                      description="You will receive a QR code to scan with your banking app. Payment is confirmed automatically within minutes."
+                      message={t('wallet.deposit.bankInfo')}
+                      description={t('wallet.deposit.bankInfoDesc')}
                       type="info"
                       showIcon
                     />
@@ -148,7 +150,7 @@ export default function DepositModal({
                       block
                       size="large"
                     >
-                      Generate QR Code
+                      {t('wallet.deposit.generateQR')}
                     </Button>
                   </Form.Item>
                 </Form>
@@ -158,7 +160,7 @@ export default function DepositModal({
               key: "paypal",
               label: (
                 <span>
-                  <CreditCardOutlined /> PayPal
+                  <CreditCardOutlined /> {t('wallet.deposit.paypal')}
                 </span>
               ),
               children: (
@@ -168,21 +170,21 @@ export default function DepositModal({
                   onFinish={handlePayPalDeposit}
                 >
                   <Form.Item
-                    label="Amount (USD)"
+                    label={t('wallet.deposit.amount')}
                     name="amount_usd"
                     rules={[
-                      { required: true, message: "Please enter amount" },
+                      { required: true, message: t('wallet.deposit.amountRequired') },
                       {
                         type: "number",
                         min: 10,
-                        message: "Minimum deposit is $10",
+                        message: t('wallet.deposit.minimumDeposit'),
                       },
                     ]}
                   >
                     <InputNumber
                       style={{ width: "100%" }}
                       prefix="$"
-                      placeholder="Enter amount"
+                      placeholder={t('wallet.deposit.amountPlaceholder')}
                       min={10}
                       step={10}
                     />
@@ -190,8 +192,8 @@ export default function DepositModal({
 
                   <Form.Item>
                     <Alert
-                      message="PayPal Payment"
-                      description="You will be redirected to PayPal to complete your payment securely."
+                      message={t('wallet.deposit.paypalInfo')}
+                      description={t('wallet.deposit.paypalInfoDesc')}
                       type="info"
                       showIcon
                     />
@@ -205,7 +207,7 @@ export default function DepositModal({
                       block
                       size="large"
                     >
-                      Pay with PayPal
+                      {t('wallet.deposit.payWithPayPal')}
                     </Button>
                   </Form.Item>
                 </Form>
@@ -216,10 +218,10 @@ export default function DepositModal({
       ) : (
         <Space direction="vertical" style={{ width: "100%" }} size="large">
           <Alert
-            message="Scan QR Code to Pay"
-            description={`Please transfer ${walletHelpers.formatVND(
-              bankDeposit.amount_vnd || 0
-            )} to complete your deposit.`}
+            message={t('wallet.deposit.scanQR')}
+            description={t('wallet.deposit.scanQRDesc', { 
+              amount: walletHelpers.formatVND(bankDeposit.amount_vnd || 0)
+            })}
             type="success"
             showIcon
           />
@@ -254,17 +256,17 @@ export default function DepositModal({
             }}
           >
             <p>
-              <strong>Bank:</strong> {bankDeposit.bank_name}
+              <strong>{t('wallet.deposit.bank')}:</strong> {bankDeposit.bank_name}
             </p>
             <p>
-              <strong>Account:</strong> {bankDeposit.bank_account}
+              <strong>{t('wallet.deposit.account')}:</strong> {bankDeposit.bank_account}
             </p>
             <p>
-              <strong>Amount:</strong>{" "}
+              <strong>{t('wallet.deposit.amount')}:</strong>{" "}
               {walletHelpers.formatVND(bankDeposit.amount_vnd || 0)}
             </p>
             <p>
-              <strong>Transfer Content:</strong>{" "}
+              <strong>{t('wallet.deposit.transferContent')}:</strong>{" "}
               <code
                 style={{
                   background: "#fff",
@@ -278,21 +280,20 @@ export default function DepositModal({
             <p
               style={{ fontSize: "12px", color: "#8c8c8c", marginTop: "12px" }}
             >
-              ⚠️ Important: Please include the transfer content exactly as shown
-              above.
+              {t('wallet.deposit.importantNote')}
             </p>
           </div>
 
           <Alert
-            message="Auto-confirmation"
-            description="Your deposit will be automatically confirmed within 1-5 minutes after we receive your transfer. The page will refresh automatically."
+            message={t('wallet.deposit.autoConfirm')}
+            description={t('wallet.deposit.autoConfirmDesc')}
             type="info"
           />
 
           <Space style={{ width: "100%", justifyContent: "center" }}>
-            <Button onClick={handleClose}>Close</Button>
+            <Button onClick={handleClose}>{t('wallet.deposit.close')}</Button>
             <Button type="primary" onClick={handleSuccess}>
-              I&apos;ve Completed the Transfer
+              {t('wallet.deposit.completed')}
             </Button>
           </Space>
         </Space>

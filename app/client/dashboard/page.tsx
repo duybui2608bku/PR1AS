@@ -7,18 +7,21 @@ import {
   ClockCircleOutlined,
   CheckCircleOutlined,
 } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 const { Title } = Typography;
 
 export default function ClientDashboard() {
+  const { t } = useTranslation();
+  
   return (
     <div>
-      <Title level={2}>Client Dashboard</Title>
+      <Title level={2}>{t("client.dashboard.title")}</Title>
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Active Jobs"
+              title={t("client.dashboard.activeJobs")}
               value={12}
               prefix={<FileTextOutlined />}
               valueStyle={{ color: "#3f8600" }}
@@ -28,7 +31,7 @@ export default function ClientDashboard() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="In Progress"
+              title={t("client.dashboard.inProgress")}
               value={5}
               prefix={<ClockCircleOutlined />}
               valueStyle={{ color: "#1890ff" }}
@@ -38,7 +41,7 @@ export default function ClientDashboard() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Completed"
+              title={t("client.dashboard.completed")}
               value={47}
               prefix={<CheckCircleOutlined />}
               valueStyle={{ color: "#cf1322" }}
@@ -48,7 +51,7 @@ export default function ClientDashboard() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Total Spent"
+              title={t("client.dashboard.totalSpent")}
               value={12340}
               prefix={<DollarOutlined />}
               precision={2}

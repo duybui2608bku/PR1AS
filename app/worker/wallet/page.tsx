@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Row, Col, Typography, Space } from "antd";
+import { useTranslation } from "react-i18next";
 import WalletBalance from "@/components/wallet/WalletBalance";
 import TransactionHistory from "@/components/wallet/TransactionHistory";
 import DepositModal from "@/components/wallet/DepositModal";
@@ -10,6 +11,7 @@ import WithdrawModal from "@/components/wallet/WithdrawModal";
 const { Title } = Typography;
 
 export default function WorkerWalletPage() {
+  const { t } = useTranslation();
   const [depositModalOpen, setDepositModalOpen] = useState(false);
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -26,7 +28,7 @@ export default function WorkerWalletPage() {
 
   return (
     <div>
-      <Title level={2}>My Wallet</Title>
+      <Title level={2}>{t("wallet.title")}</Title>
 
       <Space direction="vertical" style={{ width: "100%" }} size="large">
         {/* Wallet Balance */}
@@ -52,24 +54,20 @@ export default function WorkerWalletPage() {
               }}
             >
               <Title level={3} style={{ color: "#fff", marginTop: 0 }}>
-                💰 Your Earnings
+                {t("wallet.worker.earnings")}
               </Title>
               <Space direction="vertical" size="small">
                 <p style={{ fontSize: "16px", margin: 0 }}>
-                  💸 <strong>Withdraw:</strong> Transfer your earnings to your
-                  bank account
+                  {t("wallet.worker.earningsInfo.withdraw")}
                 </p>
                 <p style={{ fontSize: "16px", margin: 0 }}>
-                  🔒 <strong>Protected:</strong> All payments are held in escrow
-                  for your safety
+                  {t("wallet.worker.earningsInfo.protected")}
                 </p>
                 <p style={{ fontSize: "16px", margin: 0 }}>
-                  ⚡ <strong>Fast:</strong> Withdrawals processed within 1-3
-                  business days
+                  {t("wallet.worker.earningsInfo.fast")}
                 </p>
                 <p style={{ fontSize: "16px", margin: 0 }}>
-                  📊 <strong>Track:</strong> View all your earnings and
-                  transaction history
+                  {t("wallet.worker.earningsInfo.track")}
                 </p>
               </Space>
             </div>

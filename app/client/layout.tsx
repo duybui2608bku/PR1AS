@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Layout, Menu, Typography, Button } from "antd";
+import { Layout, Menu, Typography, Button, Space } from "antd";
 import {
   DashboardOutlined,
   PlusOutlined,
@@ -12,7 +12,9 @@ import {
   MenuUnfoldOutlined,
 } from "@ant-design/icons";
 import { usePathname, useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import UserMenu from "@/components/common/UserMenu";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 import type { MenuProps } from "antd";
 
 const { Header, Content, Sider } = Layout;
@@ -34,14 +36,6 @@ function getItem(
   } as MenuItem;
 }
 
-const menuItems: MenuItem[] = [
-  getItem("Dashboard", "/client/dashboard", <DashboardOutlined />),
-  getItem("My Wallet", "/client/wallet", <WalletOutlined />),
-  getItem("Post Job", "/client/post-job", <PlusOutlined />),
-  getItem("My Jobs", "/client/my-jobs", <UnorderedListOutlined />),
-  getItem("Profile", "/client/profile", <UserOutlined />),
-];
-
 export default function ClientLayout({
   children,
 }: {
@@ -50,6 +44,15 @@ export default function ClientLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+  const { t } = useTranslation();
+
+  const menuItems: MenuItem[] = [
+    getItem(t("nav.home") || "Dashboard", "/client/dashboard", <DashboardOutlined />),
+    getItem("My Wallet", "/client/wallet", <WalletOutlined />),
+    getItem("Post Job", "/client/post-job", <PlusOutlined />),
+    getItem("My Jobs", "/client/my-jobs", <UnorderedListOutlined />),
+    getItem(t("nav.profile") || "Profile", "/client/profile", <UserOutlined />),
+  ];
 
   const handleMenuClick: MenuProps["onClick"] = (e) => {
     router.push(e.key);
@@ -103,7 +106,7 @@ export default function ClientLayout({
           </div>
           {!collapsed && (
             <Title level={4} style={{ margin: 0 }}>
-              Client Panel
+              {t("client.dashboard.title") || "Client Panel"}
             </Title>
           )}
         </div>
@@ -139,7 +142,10 @@ export default function ClientLayout({
               height: 48,
             }}
           />
-          <UserMenu />
+          <Space size="middle">
+            <LanguageSwitcher />
+            <UserMenu />
+          </Space>
         </Header>
         <Content
           style={{

@@ -30,11 +30,25 @@
   },
   "header": {
     "brandName": "PR1AS",
+    "becomeWorker": "Become a Worker",
     "userMenu": {
       "profile": "My Profile",
       "bookings": "Bookings",
-      "logout": "Logout"
-    }
+      "logout": "Logout",
+      "dashboard": "Dashboard",
+      "settings": "Settings",
+      "user": "User",
+      "roles": {
+        "client": "Client",
+        "worker": "Worker",
+        "admin": "Administrator"
+      },
+      "logoutSuccess": "Logged out successfully",
+      "logoutError": "Error occurred during logout"
+    },
+    "menu": "Menu",
+    "login": "Log In",
+    "signup": "Sign Up"
   },
   "auth": {
     "login": {
@@ -157,16 +171,82 @@
     "categories": {
       "title": "Service Categories",
       "subtitle": "Over 50+ diverse services from repairs to care",
-      "viewAll": "View All Categories"
+      "viewAll": "View All Categories",
+      "items": {
+        "homeRepair": {
+          "name": "Home Repair",
+          "count": "2,500+ Workers"
+        },
+        "electricity": {
+          "name": "Electricit",
+          "count": "1,800+ Workers"
+        },
+        "transport": {
+          "name": "Transportation",
+          "count": "3,200+ Workers"
+        },
+        "housekeeping": {
+          "name": "Housekeeping",
+          "count": "4,100+ Workers"
+        },
+        "care": {
+          "name": "Care Services",
+          "count": "1,600+ Workers"
+        },
+        "events": {
+          "name": "Events",
+          "count": "900+ Workers"
+        }
+      }
     },
     "howItWorks": {
       "title": "How It Works",
       "subtitle": "Just 4 simple steps to get perfect service",
-      "finalText": "Simple, fast and efficient!"
+      "finalText": "Simple, fast and efficient!",
+      "steps": {
+        "step1": {
+          "title": "Create Account",
+          "description": "Create a free account in just 30 seconds"
+        },
+        "step2": {
+          "title": "Find Right Worker",
+          "description": "Browse thousands of workers with real reviews"
+        },
+        "step3": {
+          "title": "Book & Pay",
+          "description": "Choose suitable time and pay securely"
+        },
+        "step4": {
+          "title": "Job Completed",
+          "description": "Worker arrives on time and completes excellently"
+        }
+      }
     },
     "testimonials": {
       "title": "What Customers Say About PR1AS",
-      "subtitle": "Over 25,000+ 5-star reviews from satisfied customers"
+      "subtitle": "Over 25,000+ 5-star reviews from satisfied customers",
+      "items": {
+        "testimonial1": {
+          "name": "John Smith",
+          "role": "Homeowner",
+          "comment": "I found a very professional electrician through PR1AS. Fast and reliable service!"
+        },
+        "testimonial2": {
+          "name": "Mary Johnson",
+          "role": "Client",
+          "comment": "Excellent platform! I easily found a reliable housekeeper in my area."
+        },
+        "testimonial3": {
+          "name": "Robert Wilson",
+          "role": "Worker - Electrician",
+          "comment": "PR1AS helps me earn a stable income. The booking system is very convenient and professional."
+        },
+        "testimonial4": {
+          "name": "Sarah Davis",
+          "role": "Client",
+          "comment": "Peace of mind when hiring workers through PR1AS. Transparent reviews and fair prices!"
+        }
+      }
     },
     "trustBadges": {
       "award": {
@@ -201,6 +281,135 @@
       "inProgress": "In Progress",
       "completed": "Completed",
       "totalEarnings": "Total Earnings"
+    }
+  },
+  "client": {
+    "dashboard": {
+      "title": "Client Dashboard",
+      "activeJobs": "Active Jobs",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "totalSpent": "Total Spent"
+    }
+  },
+  "wallet": {
+    "title": "My Wallet",
+    "myWallet": "My Wallet",
+    "balance": {
+      "title": "Wallet Balance",
+      "available": "Available Balance",
+      "pending": "Pending",
+      "totalEarned": "Total Earned",
+      "totalSpent": "Total Spent",
+      "activeEscrows": "Active Escrows",
+      "refresh": "Refresh",
+      "deposit": "Deposit",
+      "withdraw": "Withdraw",
+      "status": "Status",
+      "active": "Active",
+      "loading": "Loading...",
+      "failed": "Failed to load wallet",
+      "loginRequired": "Please login to view your wallet"
+    },
+    "transaction": {
+      "title": "Transaction History",
+      "refresh": "Refresh",
+      "filterByType": "Filter by type",
+      "filterByStatus": "Filter by status",
+      "date": "Date",
+      "type": "Type",
+      "amount": "Amount",
+      "status": "Status",
+      "paymentMethod": "Payment Method",
+      "description": "Description",
+      "balanceAfter": "Balance After",
+      "total": "Total {count} transactions",
+      "failed": "Failed to load transactions",
+      "types": {
+        "deposit": "Deposit",
+        "withdrawal": "Withdrawal",
+        "payment": "Payment",
+        "earning": "Earning",
+        "platformFee": "Platform Fee",
+        "refund": "Refund",
+        "escrowCreate": "Escrow Create",
+        "escrowRelease": "Escrow Release",
+        "withdrawalFee": "Withdrawal Fee"
+      },
+      "statuses": {
+        "pending": "Pending",
+        "processing": "Processing",
+        "completed": "Completed",
+        "failed": "Failed",
+        "cancelled": "Cancelled"
+      }
+    },
+    "deposit": {
+      "title": "Deposit Money",
+      "bankTransfer": "Bank Transfer",
+      "paypal": "PayPal",
+      "amount": "Amount (USD)",
+      "amountPlaceholder": "Enter amount",
+      "amountRequired": "Please enter amount",
+      "minimumDeposit": "Minimum deposit is $10",
+      "generateQR": "Generate QR Code",
+      "payWithPayPal": "Pay with PayPal",
+      "bankInfo": "Bank Transfer via QR Code",
+      "bankInfoDesc": "You will receive a QR code to scan with your banking app. Payment is confirmed automatically within minutes.",
+      "paypalInfo": "PayPal Payment",
+      "paypalInfoDesc": "You will be redirected to PayPal to complete your payment securely.",
+      "scanQR": "Scan QR Code to Pay",
+      "scanQRDesc": "Please transfer {amount} to complete your deposit.",
+      "bank": "Bank",
+      "account": "Account",
+      "transferContent": "Transfer Content",
+      "importantNote": "⚠️ Important: Please include the transfer content exactly as shown above.",
+      "autoConfirm": "Auto-confirmation",
+      "autoConfirmDesc": "Your deposit will be automatically confirmed within 1-5 minutes after we receive your transfer. The page will refresh automatically.",
+      "close": "Close",
+      "completed": "I've Completed the Transfer",
+      "qrSuccess": "QR code generated! Please scan to complete payment.",
+      "failed": "Failed to create deposit"
+    },
+    "withdraw": {
+      "title": "Withdraw Money",
+      "bankTransfer": "Bank Transfer",
+      "paypal": "PayPal",
+      "amount": "Amount (USD)",
+      "amountPlaceholder": "Enter amount",
+      "amountRequired": "Please enter amount",
+      "minimumWithdraw": "Minimum withdrawal is $50",
+      "bankName": "Bank Name",
+      "bankNamePlaceholder": "e.g., Vietcombank, BIDV, Techcombank",
+      "bankNameRequired": "Please enter bank name",
+      "accountNumber": "Bank Account Number",
+      "accountNumberPlaceholder": "Enter your account number",
+      "accountNumberRequired": "Please enter account number",
+      "accountNumberInvalid": "Account number must contain only digits",
+      "accountHolder": "Account Holder Name",
+      "accountHolderPlaceholder": "Enter full name as shown on bank account",
+      "accountHolderRequired": "Please enter account holder name",
+      "paypalEmail": "PayPal Email",
+      "paypalEmailPlaceholder": "your.email@example.com",
+      "paypalEmailRequired": "Please enter PayPal email",
+      "paypalEmailInvalid": "Please enter a valid email",
+      "bankInfo": "Bank Transfer Withdrawal",
+      "bankInfoDesc": "Your withdrawal will be processed within 1-3 business days. Make sure your bank details are correct.",
+      "paypalInfo": "PayPal Withdrawal",
+      "paypalInfoDesc": "Your withdrawal will be sent to your PayPal account within 1-2 business days. Make sure your PayPal email is correct.",
+      "cancel": "Cancel",
+      "submit": "Submit Withdrawal Request",
+      "success": "Withdrawal request submitted successfully!",
+      "failed": "Failed to process withdrawal"
+    },
+    "worker": {
+      "earnings": "💰 Your Earnings",
+      "earningsInfo": {
+        "withdraw": "💸 Withdraw: Transfer your earnings to your bank account",
+        "protected": "🔒 Protected: All payments are held in escrow for your safety",
+        "fast": "⚡ Fast: Withdrawals processed within 1-3 business days",
+        "track": "📊 Track: View all your earnings and transaction history"
+      }
     }
   },
   "banned": {
@@ -327,6 +536,31 @@
         "deleteSuccess": "User deleted successfully",
         "deleteFailed": "Failed to delete user",
         "editComingSoon": "Edit feature coming soon"
+      }
+    }
+  },
+  "upload": {
+    "image": {
+      "button": {
+        "upload": "Upload Image",
+        "change": "Change Image",
+        "delete": "Delete",
+        "choose": "Choose Image"
+      },
+      "messages": {
+        "uploadSuccess": "Image uploaded successfully!",
+        "uploadFailed": "Failed to upload image",
+        "deleteSuccess": "Image deleted successfully!",
+        "deleteFailed": "Failed to delete image",
+        "invalidType": "Only JPEG, PNG, WebP, and GIF formats are supported.",
+        "fileTooLarge": "File size must not exceed 5MB.",
+        "uploadError": "An error occurred while uploading the image",
+        "deleteError": "An error occurred while deleting the image"
+      },
+      "labels": {
+        "avatar": "Avatar",
+        "general": "Image",
+        "product": "Product Image"
       }
     }
   },

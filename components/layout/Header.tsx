@@ -137,7 +137,7 @@ export default function Header() {
 
       {/* Mobile Drawer Menu */}
       <Drawer
-        title="Menu"
+        title={t("header.menu")}
         placement="right"
         onClose={() => setMobileMenuOpen(false)}
         open={mobileMenuOpen}
@@ -166,7 +166,7 @@ export default function Header() {
                   size="large"
                   style={{ textAlign: "left" }}
                 >
-                  Hồ sơ của tôi
+                  {t("header.userMenu.profile")}
                 </Button>
               </Link>
               <Link href="/bookings">
@@ -176,7 +176,7 @@ export default function Header() {
                   size="large"
                   style={{ textAlign: "left" }}
                 >
-                  Đặt chỗ
+                  {t("header.userMenu.bookings")}
                 </Button>
               </Link>
               <Button
@@ -186,19 +186,19 @@ export default function Header() {
                 danger
                 style={{ textAlign: "left" }}
               >
-                Đăng xuất
+                {t("header.userMenu.logout")}
               </Button>
             </>
           ) : (
             <>
               <Link href="/auth/login">
                 <Button type="primary" block size="large">
-                  Đăng nhập
+                  {t("header.login")}
                 </Button>
               </Link>
               <Link href="/auth/signup">
                 <Button block size="large">
-                  Đăng ký
+                  {t("header.signup")}
                 </Button>
               </Link>
             </>

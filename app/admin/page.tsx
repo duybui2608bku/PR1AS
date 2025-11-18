@@ -7,18 +7,21 @@ import {
   FileTextOutlined,
   DollarOutlined,
 } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 const { Title } = Typography;
 
 export default function AdminDashboard() {
+  const { t } = useTranslation();
+  
   return (
     <div>
-      <Title level={2}>Dashboard</Title>
+      <Title level={2}>{t("admin.dashboard.title")}</Title>
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Total Users"
+              title={t("admin.dashboard.totalUsers")}
               value={1234}
               prefix={<UserOutlined />}
               valueStyle={{ color: "#3f8600" }}
@@ -28,7 +31,7 @@ export default function AdminDashboard() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Active Workers"
+              title={t("admin.dashboard.activeWorkers")}
               value={456}
               prefix={<TeamOutlined />}
               valueStyle={{ color: "#1890ff" }}
@@ -38,7 +41,7 @@ export default function AdminDashboard() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Total Jobs"
+              title={t("admin.dashboard.totalJobs")}
               value={789}
               prefix={<FileTextOutlined />}
               valueStyle={{ color: "#cf1322" }}
@@ -48,7 +51,7 @@ export default function AdminDashboard() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Revenue"
+              title={t("admin.dashboard.revenue")}
               value={93256}
               prefix={<DollarOutlined />}
               precision={2}

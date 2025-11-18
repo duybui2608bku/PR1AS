@@ -13,7 +13,8 @@ import {
   Spin,
 } from "antd";
 import { SaveOutlined, GlobalOutlined } from "@ant-design/icons";
-import { getSupabaseClient } from "@/lib/supabase/client";
+import { useTranslation } from "react-i18next";
+import ImageUpload from "@/components/common/ImageUpload";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -51,22 +52,15 @@ export default function SEOSettingsPage() {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
-  const supabase = getSupabaseClient();
+  const { t } = useTranslation();
 
   const fetchSettings = useCallback(async () => {
     try {
-      const { data, error } = await supabase
-        .from("site_settings")
-        .select("*")
-        .eq("key", "seo_settings")
-        .single();
+      const response = await fetch("/api/admin/settings/seo");
+      const result = await response.json();
 
-      if (error && error.code !== "PGRST116") {
-        throw error;
-      }
-
-      if (data?.value) {
-        form.setFieldsValue(data.value);
+      if (response.ok && result.data) {
+        form.setFieldsValue(result.data);
       }
     } catch (error) {
       console.error("Error fetching settings:", error);
@@ -74,7 +68,7 @@ export default function SEOSettingsPage() {
     } finally {
       setFetchLoading(false);
     }
-  }, [form, supabase]);
+  }, [form]);
 
   useEffect(() => {
     fetchSettings();
@@ -83,35 +77,26 @@ export default function SEOSettingsPage() {
   const handleSave = async (values: SEOSettings) => {
     setLoading(true);
     try {
-      // Try to update first
-      const { error: updateError } = await supabase
-        .from("site_settings")
-        .update({ value: values, updated_at: new Date().toISOString() })
-        .eq("key", "seo_settings");
+      const response = await fetch("/api/admin/settings/seo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ settings: values }),
+      });
 
-      // If update fails (no rows), insert
-      if (
-        updateError?.code === "PGRST116" ||
-        updateError?.message?.includes("0 rows")
-      ) {
-        const { error: insertError } = await supabase
-          .from("site_settings")
-          .insert({
-            key: "seo_settings",
-            value: values,
-          });
+      const result = await response.json();
 
-        if (insertError) throw insertError;
-      } else if (updateError) {
-        throw updateError;
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to save settings");
       }
 
-      message.success("SEO settings saved successfully!");
+      message.success(t("admin.seo.saveSuccess"));
     } catch (error) {
       console.error("Error saving settings:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
-      message.error("Failed to save settings: " + errorMessage);
+      message.error(t("admin.seo.saveFailed") + ": " + errorMessage);
     } finally {
       setLoading(false);
     }
@@ -130,69 +115,108 @@ export default function SEOSettingsPage() {
       key: "general",
       label: (
         <span>
-          <GlobalOutlined /> General SEO
+          <GlobalOutlined /> {t("admin.seo.tabs.general")}
         </span>
       ),
       children: (
         <Space direction="vertical" style={{ width: "100%" }} size="large">
           <Form.Item
-            label="Site Name"
+            label={t("admin.seo.fields.siteName")}
             name="siteName"
-            rules={[{ required: true, message: "Please enter site name" }]}
+            rules={[
+              {
+                required: true,
+                message: t("admin.seo.fields.siteName") + " là bắt buộc",
+              },
+            ]}
           >
-            <Input placeholder="PR1AS" />
+            <Input placeholder={t("admin.seo.placeholders.siteName")} />
           </Form.Item>
 
           <Form.Item
-            label="Site Title"
+            label={t("admin.seo.fields.siteTitle")}
             name="siteTitle"
-            rules={[{ required: true, message: "Please enter site title" }]}
+            rules={[
+              {
+                required: true,
+                message: t("admin.seo.fields.siteTitle") + " là bắt buộc",
+              },
+            ]}
           >
-            <Input placeholder="PR1AS - Nền tảng kết nối Client & Worker" />
+            <Input placeholder={t("admin.seo.placeholders.siteTitle")} />
           </Form.Item>
 
           <Form.Item
-            label="Site Description"
+            label={t("admin.seo.fields.siteDescription")}
             name="siteDescription"
-            rules={[{ required: true, message: "Please enter description" }]}
+            rules={[
+              {
+                required: true,
+                message: t("admin.seo.fields.siteDescription") + " là bắt buộc",
+              },
+            ]}
           >
             <TextArea
               rows={3}
-              placeholder="Tìm kiếm và thuê Worker chuyên nghiệp..."
+              placeholder={t("admin.seo.placeholders.siteDescription")}
             />
           </Form.Item>
 
-          <Form.Item label="Keywords (comma separated)" name="siteKeywords">
+          <Form.Item
+            label={t("admin.seo.fields.siteKeywords")}
+            name="siteKeywords"
+          >
             <TextArea
               rows={2}
-              placeholder="worker, client, dịch vụ, tìm việc, thuê người"
+              placeholder={t("admin.seo.placeholders.siteKeywords")}
             />
           </Form.Item>
 
-          <Form.Item label="Open Graph Image URL" name="ogImage">
-            <Input placeholder="https://example.com/og-image.jpg" />
+          <Form.Item label={t("admin.seo.fields.ogImage")} name="ogImage">
+            <ImageUpload
+              type="image"
+              folder="seo"
+              imageWidth="100%"
+              imageHeight={200}
+              buttonText={t("upload.image.button.choose")}
+            />
           </Form.Item>
         </Space>
       ),
     },
     {
       key: "header",
-      label: "Header Settings",
+      label: t("admin.seo.tabs.header"),
       children: (
         <Space direction="vertical" style={{ width: "100%" }} size="large">
-          <Form.Item label="Logo URL" name="headerLogo">
-            <Input placeholder="/logo.png" />
+          <Form.Item label={t("admin.seo.fields.headerLogo")} name="headerLogo">
+            <ImageUpload
+              type="image"
+              folder="logo"
+              imageWidth={300}
+              imageHeight={100}
+              buttonText={t("upload.image.button.choose")}
+            />
           </Form.Item>
 
-          <Form.Item label="Tagline" name="headerTagline">
-            <Input placeholder="Connect. Work. Succeed." />
+          <Form.Item
+            label={t("admin.seo.fields.headerTagline")}
+            name="headerTagline"
+          >
+            <Input placeholder={t("admin.seo.placeholders.headerTagline")} />
           </Form.Item>
 
-          <Form.Item label="Contact Phone" name="headerContactPhone">
+          <Form.Item
+            label={t("admin.seo.fields.headerContactPhone")}
+            name="headerContactPhone"
+          >
             <Input placeholder="+84 xxx xxx xxx" />
           </Form.Item>
 
-          <Form.Item label="Contact Email" name="headerContactEmail">
+          <Form.Item
+            label={t("admin.seo.fields.headerContactEmail")}
+            name="headerContactEmail"
+          >
             <Input type="email" placeholder="contact@pr1as.com" />
           </Form.Item>
         </Space>
@@ -200,53 +224,83 @@ export default function SEOSettingsPage() {
     },
     {
       key: "footer",
-      label: "Footer Settings",
+      label: t("admin.seo.tabs.footer"),
       children: (
         <Space direction="vertical" style={{ width: "100%" }} size="large">
-          <Form.Item label="Company Name" name="footerCompanyName">
+          <Form.Item
+            label={t("admin.seo.fields.footerCompanyName")}
+            name="footerCompanyName"
+          >
             <Input placeholder="PR1AS Company Ltd." />
           </Form.Item>
 
-          <Form.Item label="Address" name="footerAddress">
-            <TextArea rows={2} placeholder="123 Street, City, Country" />
-          </Form.Item>
-
-          <Form.Item label="Phone" name="footerPhone">
-            <Input placeholder="+84 xxx xxx xxx" />
-          </Form.Item>
-
-          <Form.Item label="Email" name="footerEmail">
-            <Input type="email" placeholder="info@pr1as.com" />
-          </Form.Item>
-
-          <Form.Item label="About Text" name="footerAbout">
+          <Form.Item
+            label={t("admin.seo.fields.footerAddress")}
+            name="footerAddress"
+          >
             <TextArea
-              rows={3}
-              placeholder="Short description about your company..."
+              rows={2}
+              placeholder={t("admin.seo.placeholders.footerAddress")}
             />
           </Form.Item>
 
-          <Form.Item label="Copyright Text" name="footerCopyright">
-            <Input placeholder="© 2024 PR1AS. All rights reserved." />
+          <Form.Item
+            label={t("admin.seo.fields.footerPhone")}
+            name="footerPhone"
+          >
+            <Input placeholder="+84 xxx xxx xxx" />
+          </Form.Item>
+
+          <Form.Item
+            label={t("admin.seo.fields.footerEmail")}
+            name="footerEmail"
+          >
+            <Input type="email" placeholder="info@pr1as.com" />
+          </Form.Item>
+
+          <Form.Item
+            label={t("admin.seo.fields.footerAbout")}
+            name="footerAbout"
+          >
+            <TextArea
+              rows={3}
+              placeholder={t("admin.seo.placeholders.footerAbout")}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label={t("admin.seo.fields.footerCopyright")}
+            name="footerCopyright"
+          >
+            <Input placeholder={t("admin.seo.placeholders.footerCopyright")} />
           </Form.Item>
 
           <Title level={5} style={{ marginTop: 24 }}>
-            Social Media Links
+            {t("admin.seo.fields.socialMedia")}
           </Title>
 
-          <Form.Item label="Facebook URL" name="facebookUrl">
+          <Form.Item
+            label={t("admin.seo.fields.facebookUrl")}
+            name="facebookUrl"
+          >
             <Input placeholder="https://facebook.com/pr1as" />
           </Form.Item>
 
-          <Form.Item label="Twitter URL" name="twitterUrl">
+          <Form.Item label={t("admin.seo.fields.twitterUrl")} name="twitterUrl">
             <Input placeholder="https://twitter.com/pr1as" />
           </Form.Item>
 
-          <Form.Item label="Instagram URL" name="instagramUrl">
+          <Form.Item
+            label={t("admin.seo.fields.instagramUrl")}
+            name="instagramUrl"
+          >
             <Input placeholder="https://instagram.com/pr1as" />
           </Form.Item>
 
-          <Form.Item label="LinkedIn URL" name="linkedinUrl">
+          <Form.Item
+            label={t("admin.seo.fields.linkedinUrl")}
+            name="linkedinUrl"
+          >
             <Input placeholder="https://linkedin.com/company/pr1as" />
           </Form.Item>
         </Space>
@@ -256,10 +310,8 @@ export default function SEOSettingsPage() {
 
   return (
     <div>
-      <Title level={2}>SEO & Site Settings</Title>
-      <Text type="secondary">
-        Configure SEO metadata, header, and footer settings for your website
-      </Text>
+      <Title level={2}>{t("admin.seo.title")}</Title>
+      <Text type="secondary">{t("admin.seo.subtitle")}</Text>
 
       <Card style={{ marginTop: 24 }}>
         <Form
@@ -267,13 +319,11 @@ export default function SEOSettingsPage() {
           layout="vertical"
           onFinish={handleSave}
           initialValues={{
-            siteName: "PR1AS",
-            siteTitle: "PR1AS - Nền tảng kết nối Client & Worker",
-            siteDescription:
-              "Tìm kiếm và thuê Worker chuyên nghiệp hoặc cung cấp dịch vụ và kiếm thu nhập",
-            siteKeywords:
-              "worker, client, dịch vụ, tìm việc, thuê người, PR1AS",
-            footerCopyright: "© 2024 PR1AS. All rights reserved.",
+            siteName: t("admin.seo.placeholders.siteName"),
+            siteTitle: t("admin.seo.placeholders.siteTitle"),
+            siteDescription: t("admin.seo.placeholders.siteDescription"),
+            siteKeywords: t("admin.seo.placeholders.siteKeywords"),
+            footerCopyright: t("admin.seo.placeholders.footerCopyright"),
           }}
         >
           <Tabs items={tabItems} />
@@ -286,7 +336,7 @@ export default function SEOSettingsPage() {
               loading={loading}
               size="large"
             >
-              Save All Settings
+              {t("admin.seo.saveButton")}
             </Button>
           </Form.Item>
         </Form>

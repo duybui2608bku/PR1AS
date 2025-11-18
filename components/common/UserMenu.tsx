@@ -14,6 +14,7 @@ import {
 import { useRouter } from "next/navigation";
 import { authAPI } from "@/lib/auth/api-client";
 import { showMessage } from "@/lib/utils/toast";
+import { useTranslation } from "react-i18next";
 
 const { Text } = Typography;
 
@@ -29,6 +30,7 @@ export default function UserMenu() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchUserProfile();
@@ -50,11 +52,11 @@ export default function UserMenu() {
   const handleLogout = async () => {
     try {
       await authAPI.logout();
-      showMessage.success("Đăng xuất thành công");
+      showMessage.success(t("header.userMenu.logoutSuccess"));
       router.push("/auth/login");
     } catch (error) {
       console.error("Logout error:", error);
-      showMessage.error("Có lỗi xảy ra khi đăng xuất");
+      showMessage.error(t("header.userMenu.logoutError"));
     }
   };
 
@@ -67,12 +69,7 @@ export default function UserMenu() {
   }
 
   const getRoleName = (role: string) => {
-    const roleNames = {
-      client: "Khách hàng",
-      worker: "Thợ",
-      admin: "Quản trị viên",
-    };
-    return roleNames[role as keyof typeof roleNames] || role;
+    return t(`header.userMenu.roles.${role}`) || role;
   };
 
   const menuItems: MenuProps["items"] = [
@@ -88,7 +85,7 @@ export default function UserMenu() {
             />
             <div>
               <Text strong style={{ display: "block", fontSize: 16 }}>
-                {user.full_name || "Người dùng"}
+                {user.full_name || t("header.userMenu.user")}
               </Text>
               <Text type="secondary" style={{ fontSize: 12 }}>
                 {user.email}
@@ -117,17 +114,17 @@ export default function UserMenu() {
     },
     {
       key: "dashboard",
-      label: "Dashboard",
+      label: t("header.userMenu.dashboard"),
       icon: <DashboardOutlined />,
     },
     {
       key: "profile",
-      label: "Hồ sơ của tôi",
+      label: t("header.userMenu.profile"),
       icon: <IdcardOutlined />,
     },
     {
       key: "settings",
-      label: "Cài đặt",
+      label: t("header.userMenu.settings"),
       icon: <SettingOutlined />,
     },
     {
@@ -135,7 +132,7 @@ export default function UserMenu() {
     },
     {
       key: "logout",
-      label: "Đăng xuất",
+      label: t("header.userMenu.logout"),
       icon: <LogoutOutlined />,
       danger: true,
     },

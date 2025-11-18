@@ -37,11 +37,10 @@ export default function HeroSection() {
                 level={1}
                 className="!text-white !text-3xl sm:!text-4xl md:!text-5xl lg:!text-6xl xl:!text-7xl !font-bold !mb-4 sm:!mb-6 !leading-tight"
               >
-                {t("Tìm Worker Chuyên Nghiệp")}
+                {t("home.hero.slide1.title")}
               </Title>
               <Paragraph className="!text-white !text-base sm:!text-lg md:!text-xl lg:!text-2xl !mb-6 sm:!mb-8 max-w-3xl mx-auto px-4">
-                Kết nối với hàng ngàn worker uy tín, được xác thực và đánh giá
-                cao trong khu vực của bạn
+                {t("home.hero.slide1.description")}
               </Paragraph>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4">
                 <Link href="/auth/signup" className="w-full sm:w-auto">
@@ -73,11 +72,10 @@ export default function HeroSection() {
                 level={1}
                 className="!text-white !text-3xl sm:!text-4xl md:!text-5xl lg:!text-6xl xl:!text-7xl !font-bold !mb-4 sm:!mb-6 !leading-tight"
               >
-                An Toàn & Đáng Tin Cậy
+                {t("home.hero.slide2.title")}
               </Title>
               <Paragraph className="!text-white !text-base sm:!text-lg md:!text-xl lg:!text-2xl !mb-6 sm:!mb-8 max-w-3xl mx-auto px-4">
-                Tất cả worker đều được xác thực danh tính và có đánh giá thực từ
-                khách hàng
+                {t("home.hero.slide2.description")}
               </Paragraph>
               <div className="flex justify-center px-4">
                 <Link href="/auth/signup" className="w-full sm:w-auto">
@@ -87,7 +85,7 @@ export default function HeroSection() {
                     icon={<SafetyOutlined />}
                     className="!h-12 sm:!h-14 !px-6 sm:!px-8 !text-base sm:!text-lg !font-semibold !bg-white !text-[#690F0F] hover:!bg-gray-100 w-full sm:w-auto"
                   >
-                    Khám Phá Ngay
+                    {t("home.hero.slide2.primaryCTA")}
                   </Button>
                 </Link>
               </div>
@@ -101,11 +99,10 @@ export default function HeroSection() {
                 level={1}
                 className="!text-white !text-3xl sm:!text-4xl md:!text-5xl lg:!text-6xl xl:!text-7xl !font-bold !mb-4 sm:!mb-6 !leading-tight"
               >
-                Nhanh Chóng & Tiện Lợi
+                {t("home.hero.slide3.title")}
               </Title>
               <Paragraph className="!text-white !text-base sm:!text-lg md:!text-xl lg:!text-2xl !mb-6 sm:!mb-8 max-w-3xl mx-auto px-4">
-                Đặt lịch online, thanh toán dễ dàng, theo dõi tiến độ mọi lúc
-                mọi nơi
+                {t("home.hero.slide3.description")}
               </Paragraph>
               <div className="flex justify-center px-4">
                 <Link href="/auth/signup" className="w-full sm:w-auto">
@@ -115,7 +112,7 @@ export default function HeroSection() {
                     icon={<ThunderboltOutlined />}
                     className="!h-12 sm:!h-14 !px-6 sm:!px-8 !text-base sm:!text-lg !font-semibold !bg-white !text-[#690F0F] hover:!bg-gray-100 w-full sm:w-auto"
                   >
-                    Bắt Đầu Ngay
+                    {t("home.hero.slide3.primaryCTA")}
                   </Button>
                 </Link>
               </div>

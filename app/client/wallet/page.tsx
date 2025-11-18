@@ -7,6 +7,7 @@
 
 import React, { useState } from "react";
 import { Row, Col, Typography, Space } from "antd";
+import { useTranslation } from "react-i18next";
 import WalletBalance from "@/components/wallet/WalletBalance";
 import TransactionHistory from "@/components/wallet/TransactionHistory";
 import DepositModal from "@/components/wallet/DepositModal";
@@ -15,6 +16,7 @@ import WithdrawModal from "@/components/wallet/WithdrawModal";
 const { Title } = Typography;
 
 export default function WalletPage() {
+  const { t } = useTranslation();
   const [depositModalOpen, setDepositModalOpen] = useState(false);
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -31,7 +33,7 @@ export default function WalletPage() {
 
   return (
     <div>
-      <Title level={2}>My Wallet</Title>
+      <Title level={2}>{t("wallet.title")}</Title>
 
       <Space direction="vertical" style={{ width: "100%" }} size="large">
         {/* Wallet Balance */}

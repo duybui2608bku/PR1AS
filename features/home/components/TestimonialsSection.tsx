@@ -1,9 +1,44 @@
+"use client";
+
 import { Typography, Card, Carousel, Avatar, Rate } from "antd";
-import { TESTIMONIALS } from "../constants";
+import { useTranslation } from "react-i18next";
 
 const { Title, Paragraph, Text } = Typography;
 
 export default function TestimonialsSection() {
+  const { t } = useTranslation();
+
+  const TESTIMONIALS = [
+    {
+      nameKey: "home.testimonials.items.testimonial1.name",
+      roleKey: "home.testimonials.items.testimonial1.role",
+      commentKey: "home.testimonials.items.testimonial1.comment",
+      avatar: "https://i.pravatar.cc/150?img=1",
+      rating: 5,
+    },
+    {
+      nameKey: "home.testimonials.items.testimonial2.name",
+      roleKey: "home.testimonials.items.testimonial2.role",
+      commentKey: "home.testimonials.items.testimonial2.comment",
+      avatar: "https://i.pravatar.cc/150?img=2",
+      rating: 5,
+    },
+    {
+      nameKey: "home.testimonials.items.testimonial3.name",
+      roleKey: "home.testimonials.items.testimonial3.role",
+      commentKey: "home.testimonials.items.testimonial3.comment",
+      avatar: "https://i.pravatar.cc/150?img=3",
+      rating: 5,
+    },
+    {
+      nameKey: "home.testimonials.items.testimonial4.name",
+      roleKey: "home.testimonials.items.testimonial4.role",
+      commentKey: "home.testimonials.items.testimonial4.comment",
+      avatar: "https://i.pravatar.cc/150?img=4",
+      rating: 5,
+    },
+  ];
+
   return (
     <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-[#690F0F] via-[#8B1818] to-[#690F0F] text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -12,10 +47,10 @@ export default function TestimonialsSection() {
             level={2}
             className="!text-white !text-3xl sm:!text-4xl md:!text-5xl !font-bold !mb-3 sm:!mb-4"
           >
-            Khách Hàng Nói Gì Về PR1AS
+            {t("home.testimonials.title")}
           </Title>
           <Paragraph className="!text-white !text-base sm:!text-lg md:!text-xl max-w-2xl mx-auto opacity-90 px-4">
-            Hơn 25,000+ đánh giá 5 sao từ khách hàng hài lòng
+            {t("home.testimonials.subtitle")}
           </Paragraph>
         </div>
 
@@ -52,10 +87,10 @@ export default function TestimonialsSection() {
                     level={4}
                     className="!text-white !mb-1 !text-base sm:!text-lg"
                   >
-                    {testimonial.name}
+                    {t(testimonial.nameKey)}
                   </Title>
                   <Text className="!text-white/80 !text-xs sm:!text-sm">
-                    {testimonial.role}
+                    {t(testimonial.roleKey)}
                   </Text>
                 </div>
                 <div className="text-center mb-3 sm:mb-4">
@@ -66,7 +101,7 @@ export default function TestimonialsSection() {
                   />
                 </div>
                 <Paragraph className="!text-white/90 !text-center !text-sm sm:!text-base !italic">
-                  &ldquo;{testimonial.comment}&rdquo;
+                  &ldquo;{t(testimonial.commentKey)}&rdquo;
                 </Paragraph>
               </Card>
             </div>

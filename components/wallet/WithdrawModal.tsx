@@ -19,6 +19,7 @@ import {
   Space,
 } from "antd";
 import { BankOutlined, CreditCardOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import { walletAPI } from "@/lib/wallet/api-client";
 
 interface WithdrawModalProps {
@@ -32,6 +33,7 @@ export default function WithdrawModal({
   onClose,
   onSuccess,
 }: WithdrawModalProps) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
@@ -50,12 +52,12 @@ export default function WithdrawModal({
         values.account_holder
       );
 
-      message.success("Withdrawal request submitted successfully!");
+      message.success(t('wallet.withdraw.success'));
       form.resetFields();
       onSuccess?.();
       onClose();
     } catch (error: unknown) {
-      message.error((error as Error).message ?? "Failed to process withdrawal");
+      message.error((error as Error).message ?? t('wallet.withdraw.failed'));
     } finally {
       setLoading(false);
     }
@@ -69,12 +71,12 @@ export default function WithdrawModal({
       setLoading(true);
       await walletAPI.withdrawPayPal(values.amount_usd, values.paypal_email);
 
-      message.success("Withdrawal request submitted successfully!");
+      message.success(t('wallet.withdraw.success'));
       form.resetFields();
       onSuccess?.();
       onClose();
     } catch (error: unknown) {
-      message.error((error as Error).message ?? "Failed to process withdrawal");
+      message.error((error as Error).message ?? t('wallet.withdraw.failed'));
     } finally {
       setLoading(false);
     }
@@ -87,7 +89,7 @@ export default function WithdrawModal({
 
   return (
     <Modal
-      title="Withdraw Money"
+      title={t('wallet.withdraw.title')}
       open={open}
       onCancel={handleClose}
       footer={null}
@@ -99,73 +101,73 @@ export default function WithdrawModal({
             key: "bank",
             label: (
               <span>
-                <BankOutlined /> Bank Transfer
+                <BankOutlined /> {t('wallet.withdraw.bankTransfer')}
               </span>
             ),
             children: (
               <Form form={form} layout="vertical" onFinish={handleBankWithdraw}>
                 <Form.Item
-                  label="Amount (USD)"
+                  label={t('wallet.withdraw.amount')}
                   name="amount_usd"
                   rules={[
-                    { required: true, message: "Please enter amount" },
+                    { required: true, message: t('wallet.withdraw.amountRequired') },
                     {
                       type: "number",
                       min: 50,
-                      message: "Minimum withdrawal is $50",
+                      message: t('wallet.withdraw.minimumWithdraw'),
                     },
                   ]}
                 >
                   <InputNumber
                     style={{ width: "100%" }}
                     prefix="$"
-                    placeholder="Enter amount"
+                    placeholder={t('wallet.withdraw.amountPlaceholder')}
                     min={50}
                     step={10}
                   />
                 </Form.Item>
 
                 <Form.Item
-                  label="Bank Name"
+                  label={t('wallet.withdraw.bankName')}
                   name="bank_name"
                   rules={[
-                    { required: true, message: "Please enter bank name" },
+                    { required: true, message: t('wallet.withdraw.bankNameRequired') },
                   ]}
                 >
-                  <Input placeholder="e.g., Vietcombank, BIDV, Techcombank" />
+                  <Input placeholder={t('wallet.withdraw.bankNamePlaceholder')} />
                 </Form.Item>
 
                 <Form.Item
-                  label="Bank Account Number"
+                  label={t('wallet.withdraw.accountNumber')}
                   name="bank_account"
                   rules={[
-                    { required: true, message: "Please enter account number" },
+                    { required: true, message: t('wallet.withdraw.accountNumberRequired') },
                     {
                       pattern: /^[0-9]+$/,
-                      message: "Account number must contain only digits",
+                      message: t('wallet.withdraw.accountNumberInvalid'),
                     },
                   ]}
                 >
-                  <Input placeholder="Enter your account number" />
+                  <Input placeholder={t('wallet.withdraw.accountNumberPlaceholder')} />
                 </Form.Item>
 
                 <Form.Item
-                  label="Account Holder Name"
+                  label={t('wallet.withdraw.accountHolder')}
                   name="account_holder"
                   rules={[
                     {
                       required: true,
-                      message: "Please enter account holder name",
+                      message: t('wallet.withdraw.accountHolderRequired'),
                     },
                   ]}
                 >
-                  <Input placeholder="Enter full name as shown on bank account" />
+                  <Input placeholder={t('wallet.withdraw.accountHolderPlaceholder')} />
                 </Form.Item>
 
                 <Form.Item>
                   <Alert
-                    message="Bank Transfer Withdrawal"
-                    description="Your withdrawal will be processed within 1-3 business days. Make sure your bank details are correct."
+                    message={t('wallet.withdraw.bankInfo')}
+                    description={t('wallet.withdraw.bankInfoDesc')}
                     type="info"
                     showIcon
                   />
@@ -173,14 +175,14 @@ export default function WithdrawModal({
 
                 <Form.Item>
                   <Space style={{ width: "100%", justifyContent: "flex-end" }}>
-                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleClose}>{t('wallet.withdraw.cancel')}</Button>
                     <Button
                       type="primary"
                       htmlType="submit"
                       loading={loading}
                       size="large"
                     >
-                      Submit Withdrawal Request
+                      {t('wallet.withdraw.submit')}
                     </Button>
                   </Space>
                 </Form.Item>
@@ -191,7 +193,7 @@ export default function WithdrawModal({
             key: "paypal",
             label: (
               <span>
-                <CreditCardOutlined /> PayPal
+                <CreditCardOutlined /> {t('wallet.withdraw.paypal')}
               </span>
             ),
             children: (
@@ -201,41 +203,41 @@ export default function WithdrawModal({
                 onFinish={handlePayPalWithdraw}
               >
                 <Form.Item
-                  label="Amount (USD)"
+                  label={t('wallet.withdraw.amount')}
                   name="amount_usd"
                   rules={[
-                    { required: true, message: "Please enter amount" },
+                    { required: true, message: t('wallet.withdraw.amountRequired') },
                     {
                       type: "number",
                       min: 50,
-                      message: "Minimum withdrawal is $50",
+                      message: t('wallet.withdraw.minimumWithdraw'),
                     },
                   ]}
                 >
                   <InputNumber
                     style={{ width: "100%" }}
                     prefix="$"
-                    placeholder="Enter amount"
+                    placeholder={t('wallet.withdraw.amountPlaceholder')}
                     min={50}
                     step={10}
                   />
                 </Form.Item>
 
                 <Form.Item
-                  label="PayPal Email"
+                  label={t('wallet.withdraw.paypalEmail')}
                   name="paypal_email"
                   rules={[
-                    { required: true, message: "Please enter PayPal email" },
-                    { type: "email", message: "Please enter a valid email" },
+                    { required: true, message: t('wallet.withdraw.paypalEmailRequired') },
+                    { type: "email", message: t('wallet.withdraw.paypalEmailInvalid') },
                   ]}
                 >
-                  <Input placeholder="your.email@example.com" />
+                  <Input placeholder={t('wallet.withdraw.paypalEmailPlaceholder')} />
                 </Form.Item>
 
                 <Form.Item>
                   <Alert
-                    message="PayPal Withdrawal"
-                    description="Your withdrawal will be sent to your PayPal account within 1-2 business days. Make sure your PayPal email is correct."
+                    message={t('wallet.withdraw.paypalInfo')}
+                    description={t('wallet.withdraw.paypalInfoDesc')}
                     type="info"
                     showIcon
                   />
@@ -243,14 +245,14 @@ export default function WithdrawModal({
 
                 <Form.Item>
                   <Space style={{ width: "100%", justifyContent: "flex-end" }}>
-                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleClose}>{t('wallet.withdraw.cancel')}</Button>
                     <Button
                       type="primary"
                       htmlType="submit"
                       loading={loading}
                       size="large"
                     >
-                      Submit Withdrawal Request
+                      {t('wallet.withdraw.submit')}
                     </Button>
                   </Space>
                 </Form.Item>

@@ -13,9 +13,17 @@ export function createClient(accessToken?: string) {
       autoRefreshToken: false,
       persistSession: false,
     },
+    global: accessToken
+      ? {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      : undefined,
   });
+
   if (accessToken) {
-    client.auth.setSession({
+    void client.auth.setSession({
       access_token: accessToken,
       refresh_token: "",
     });

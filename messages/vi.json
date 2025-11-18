@@ -30,11 +30,25 @@
   },
   "header": {
     "brandName": "PR1AS",
+    "becomeWorker": "Trở thành Worker",
     "userMenu": {
       "profile": "Hồ sơ của tôi",
       "bookings": "Đặt chỗ",
-      "logout": "Đăng xuất"
-    }
+      "logout": "Đăng xuất",
+      "dashboard": "Dashboard",
+      "settings": "Cài đặt",
+      "user": "Người dùng",
+      "roles": {
+        "client": "Khách hàng",
+        "worker": "Thợ",
+        "admin": "Quản trị viên"
+      },
+      "logoutSuccess": "Đăng xuất thành công",
+      "logoutError": "Có lỗi xảy ra khi đăng xuất"
+    },
+    "menu": "Menu",
+    "login": "Đăng nhập",
+    "signup": "Đăng ký"
   },
   "footer": {
     "about": {
@@ -177,16 +191,82 @@
     "categories": {
       "title": "Danh Mục Dịch Vụ",
       "subtitle": "Hơn 50+ loại dịch vụ đa dạng từ sửa chữa đến chăm sóc",
-      "viewAll": "Xem Tất Cả Danh Mục"
+      "viewAll": "Xem Tất Cả Danh Mục",
+      "items": {
+        "homeRepair": {
+          "name": "Sửa chữa nhà",
+          "count": "2,500+ Workers"
+        },
+        "electricity": {
+          "name": "Điện - Nước",
+          "count": "1,800+ Workers"
+        },
+        "transport": {
+          "name": "Vận chuyển",
+          "count": "3,200+ Workers"
+        },
+        "housekeeping": {
+          "name": "Giúp việc",
+          "count": "4,100+ Workers"
+        },
+        "care": {
+          "name": "Chăm sóc",
+          "count": "1,600+ Workers"
+        },
+        "events": {
+          "name": "Sự kiện",
+          "count": "900+ Workers"
+        }
+      }
     },
     "howItWorks": {
       "title": "Cách Thức Hoạt Động",
       "subtitle": "Chỉ 4 bước đơn giản để có được dịch vụ hoàn hảo",
-      "finalText": "Đơn giản, nhanh chóng và hiệu quả!"
+      "finalText": "Đơn giản, nhanh chóng và hiệu quả!",
+      "steps": {
+        "step1": {
+          "title": "Đăng ký tài khoản",
+          "description": "Tạo tài khoản miễn phí chỉ trong 30 giây"
+        },
+        "step2": {
+          "title": "Tìm Worker phù hợp",
+          "description": "Duyệt qua hàng ngàn Worker với đánh giá thật"
+        },
+        "step3": {
+          "title": "Đặt lịch & Thanh toán",
+          "description": "Chọn thời gian phù hợp và thanh toán an toàn"
+        },
+        "step4": {
+          "title": "Hoàn thành công việc",
+          "description": "Worker đến đúng hẹn và hoàn thành xuất sắc"
+        }
+      }
     },
     "testimonials": {
       "title": "Khách Hàng Nói Gì Về PR1AS",
-      "subtitle": "Hơn 25,000+ đánh giá 5 sao từ khách hàng hài lòng"
+      "subtitle": "Hơn 25,000+ đánh giá 5 sao từ khách hàng hài lòng",
+      "items": {
+        "testimonial1": {
+          "name": "Nguyễn Văn A",
+          "role": "Chủ nhà",
+          "comment": "Tôi đã tìm được thợ sửa điện rất chuyên nghiệp qua PR1AS. Dịch vụ nhanh chóng và đáng tin cậy!"
+        },
+        "testimonial2": {
+          "name": "Trần Thị B",
+          "role": "Client",
+          "comment": "Nền tảng tuyệt vời! Tôi dễ dàng tìm được người giúp việc uy tín trong khu vực của mình."
+        },
+        "testimonial3": {
+          "name": "Lê Văn C",
+          "role": "Worker - Thợ điện",
+          "comment": "PR1AS giúp tôi có thêm thu nhập ổn định. Hệ thống đặt lịch rất tiện lợi và chuyên nghiệp."
+        },
+        "testimonial4": {
+          "name": "Phạm Thị D",
+          "role": "Client",
+          "comment": "An tâm khi thuê worker qua PR1AS. Đánh giá minh bạch, giá cả hợp lý!"
+        }
+      }
     },
     "trustBadges": {
       "award": {
@@ -221,6 +301,135 @@
       "inProgress": "Đang thực hiện",
       "completed": "Hoàn thành",
       "totalEarnings": "Tổng thu nhập"
+    }
+  },
+  "client": {
+    "dashboard": {
+      "title": "Bảng điều khiển Client",
+      "activeJobs": "Công việc đang hoạt động",
+      "inProgress": "Đang thực hiện",
+      "completed": "Hoàn thành",
+      "totalSpent": "Tổng chi tiêu"
+    }
+  },
+  "wallet": {
+    "title": "Ví của tôi",
+    "myWallet": "Ví của tôi",
+    "balance": {
+      "title": "Số dư ví",
+      "available": "Số dư khả dụng",
+      "pending": "Đang chờ",
+      "totalEarned": "Tổng thu nhập",
+      "totalSpent": "Tổng chi tiêu",
+      "activeEscrows": "Escrow đang hoạt động",
+      "refresh": "Làm mới",
+      "deposit": "Nạp tiền",
+      "withdraw": "Rút tiền",
+      "status": "Trạng thái",
+      "active": "Hoạt động",
+      "loading": "Đang tải...",
+      "failed": "Không thể tải ví",
+      "loginRequired": "Vui lòng đăng nhập để xem ví"
+    },
+    "transaction": {
+      "title": "Lịch sử giao dịch",
+      "refresh": "Làm mới",
+      "filterByType": "Lọc theo loại",
+      "filterByStatus": "Lọc theo trạng thái",
+      "date": "Ngày",
+      "type": "Loại",
+      "amount": "Số tiền",
+      "status": "Trạng thái",
+      "paymentMethod": "Phương thức thanh toán",
+      "description": "Mô tả",
+      "balanceAfter": "Số dư sau",
+      "total": "Tổng {count} giao dịch",
+      "failed": "Không thể tải giao dịch",
+      "types": {
+        "deposit": "Nạp tiền",
+        "withdrawal": "Rút tiền",
+        "payment": "Thanh toán",
+        "earning": "Thu nhập",
+        "platformFee": "Phí nền tảng",
+        "refund": "Hoàn tiền",
+        "escrowCreate": "Tạo Escrow",
+        "escrowRelease": "Giải phóng Escrow",
+        "withdrawalFee": "Phí rút tiền"
+      },
+      "statuses": {
+        "pending": "Đang chờ",
+        "processing": "Đang xử lý",
+        "completed": "Hoàn thành",
+        "failed": "Thất bại",
+        "cancelled": "Đã hủy"
+      }
+    },
+    "deposit": {
+      "title": "Nạp tiền",
+      "bankTransfer": "Chuyển khoản ngân hàng",
+      "paypal": "PayPal",
+      "amount": "Số tiền (USD)",
+      "amountPlaceholder": "Nhập số tiền",
+      "amountRequired": "Vui lòng nhập số tiền",
+      "minimumDeposit": "Số tiền nạp tối thiểu là $10",
+      "generateQR": "Tạo mã QR",
+      "payWithPayPal": "Thanh toán với PayPal",
+      "bankInfo": "Thông tin chuyển khoản ngân hàng",
+      "bankInfoDesc": "Bạn sẽ nhận được mã QR để quét bằng ứng dụng ngân hàng. Thanh toán được xác nhận tự động trong vài phút.",
+      "paypalInfo": "Thanh toán PayPal",
+      "paypalInfoDesc": "Bạn sẽ được chuyển hướng đến PayPal để hoàn tất thanh toán an toàn.",
+      "scanQR": "Quét mã QR để thanh toán",
+      "scanQRDesc": "Vui lòng chuyển {amount} để hoàn tất nạp tiền.",
+      "bank": "Ngân hàng",
+      "account": "Số tài khoản",
+      "transferContent": "Nội dung chuyển khoản",
+      "importantNote": "⚠️ Quan trọng: Vui lòng bao gồm chính xác nội dung chuyển khoản như trên.",
+      "autoConfirm": "Tự động xác nhận",
+      "autoConfirmDesc": "Khoản nạp của bạn sẽ được tự động xác nhận trong vòng 1-5 phút sau khi chúng tôi nhận được chuyển khoản. Trang sẽ tự động làm mới.",
+      "close": "Đóng",
+      "completed": "Tôi đã hoàn tất chuyển khoản",
+      "qrSuccess": "Đã tạo mã QR! Vui lòng quét để hoàn tất thanh toán.",
+      "failed": "Không thể tạo yêu cầu nạp tiền"
+    },
+    "withdraw": {
+      "title": "Rút tiền",
+      "bankTransfer": "Chuyển khoản ngân hàng",
+      "paypal": "PayPal",
+      "amount": "Số tiền (USD)",
+      "amountPlaceholder": "Nhập số tiền",
+      "amountRequired": "Vui lòng nhập số tiền",
+      "minimumWithdraw": "Số tiền rút tối thiểu là $50",
+      "bankName": "Tên ngân hàng",
+      "bankNamePlaceholder": "vd: Vietcombank, BIDV, Techcombank",
+      "bankNameRequired": "Vui lòng nhập tên ngân hàng",
+      "accountNumber": "Số tài khoản ngân hàng",
+      "accountNumberPlaceholder": "Nhập số tài khoản của bạn",
+      "accountNumberRequired": "Vui lòng nhập số tài khoản",
+      "accountNumberInvalid": "Số tài khoản chỉ được chứa chữ số",
+      "accountHolder": "Tên chủ tài khoản",
+      "accountHolderPlaceholder": "Nhập họ tên đầy đủ như trên tài khoản ngân hàng",
+      "accountHolderRequired": "Vui lòng nhập tên chủ tài khoản",
+      "paypalEmail": "Email PayPal",
+      "paypalEmailPlaceholder": "your.email@example.com",
+      "paypalEmailRequired": "Vui lòng nhập email PayPal",
+      "paypalEmailInvalid": "Vui lòng nhập email hợp lệ",
+      "bankInfo": "Rút tiền qua chuyển khoản ngân hàng",
+      "bankInfoDesc": "Yêu cầu rút tiền sẽ được xử lý trong vòng 1-3 ngày làm việc. Đảm bảo thông tin ngân hàng của bạn chính xác.",
+      "paypalInfo": "Rút tiền qua PayPal",
+      "paypalInfoDesc": "Khoản rút sẽ được gửi đến tài khoản PayPal của bạn trong vòng 1-2 ngày làm việc. Đảm bảo email PayPal chính xác.",
+      "cancel": "Hủy",
+      "submit": "Gửi yêu cầu rút tiền",
+      "success": "Yêu cầu rút tiền đã được gửi thành công!",
+      "failed": "Không thể xử lý yêu cầu rút tiền"
+    },
+    "worker": {
+      "earnings": "💰 Thu nhập của bạn",
+      "earningsInfo": {
+        "withdraw": "💸 Rút tiền: Chuyển thu nhập của bạn vào tài khoản ngân hàng",
+        "protected": "🔒 Được bảo vệ: Tất cả thanh toán được giữ trong escrow để đảm bảo an toàn",
+        "fast": "⚡ Nhanh chóng: Rút tiền được xử lý trong vòng 1-3 ngày làm việc",
+        "track": "📊 Theo dõi: Xem tất cả thu nhập và lịch sử giao dịch của bạn"
+      }
     }
   },
   "admin": {
@@ -327,6 +536,31 @@
         "deleteSuccess": "Xóa người dùng thành công",
         "deleteFailed": "Không thể xóa người dùng",
         "editComingSoon": "Tính năng sửa sắp ra mắt"
+      }
+    }
+  },
+  "upload": {
+    "image": {
+      "button": {
+        "upload": "Tải ảnh lên",
+        "change": "Thay đổi ảnh",
+        "delete": "Xóa",
+        "choose": "Chọn ảnh"
+      },
+      "messages": {
+        "uploadSuccess": "Tải ảnh lên thành công!",
+        "uploadFailed": "Tải ảnh lên thất bại",
+        "deleteSuccess": "Xóa ảnh thành công!",
+        "deleteFailed": "Xóa ảnh thất bại",
+        "invalidType": "Chỉ hỗ trợ định dạng JPEG, PNG, WebP và GIF.",
+        "fileTooLarge": "Kích thước file không được vượt quá 5MB.",
+        "uploadError": "Có lỗi xảy ra khi tải ảnh lên",
+        "deleteError": "Có lỗi xảy ra khi xóa ảnh"
+      },
+      "labels": {
+        "avatar": "Ảnh đại diện",
+        "general": "Hình ảnh",
+        "product": "Ảnh sản phẩm"
       }
     }
   },

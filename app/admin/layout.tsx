@@ -54,7 +54,7 @@ export default function AdminLayout({
   const router = useRouter();
   const pathname = usePathname();
   const supabase = getSupabaseClient();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const menuItems: MenuItem[] = [
     getItem(t("admin.sidebar.dashboard"), "/admin", <DashboardOutlined />),
@@ -120,6 +120,8 @@ export default function AdminLayout({
 
   useEffect(() => {
     checkAuth();
+    // Force admin panel to always use Vietnamese
+    i18n.changeLanguage('vi');
   }, [checkAuth]);
 
   const handleLogout = async () => {

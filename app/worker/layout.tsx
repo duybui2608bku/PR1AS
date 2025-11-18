@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Layout, Menu, Typography, Button } from "antd";
+import { Layout, Menu, Typography, Button, Space } from "antd";
 import {
   DashboardOutlined,
   UnorderedListOutlined,
@@ -13,6 +13,7 @@ import {
 } from "@ant-design/icons";
 import { usePathname, useRouter } from "next/navigation";
 import UserMenu from "@/components/common/UserMenu";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 import type { MenuProps } from "antd";
 
 const { Header, Content, Sider } = Layout;
@@ -44,6 +45,14 @@ export default function WorkerLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+  const { t } = useTranslation();
+
+  const menuItems: MenuItem[] = [
+    getItem(t("worker.dashboard.title") || "Dashboard", "/worker/dashboard", <DashboardOutlined />),
+    getItem("My Wallet", "/worker/wallet", <WalletOutlined />),
+    getItem("My Jobs", "/worker/my-jobs", <UnorderedListOutlined />),
+    getItem(t("nav.profile") || "Profile", "/worker/profile", <UserOutlined />),
+  ];
 
   const handleMenuClick: MenuProps["onClick"] = (e) => {
     router.push(e.key);
@@ -97,7 +106,7 @@ export default function WorkerLayout({
           </div>
           {!collapsed && (
             <Title level={4} style={{ margin: 0 }}>
-              Worker Panel
+              {t("worker.dashboard.title") || "Worker Panel"}
             </Title>
           )}
         </div>
@@ -135,7 +144,10 @@ export default function WorkerLayout({
               height: 48,
             }}
           />
-          <UserMenu />
+          <Space size="middle">
+            <LanguageSwitcher />
+            <UserMenu />
+          </Space>
         </Header>
         <Content
           style={{

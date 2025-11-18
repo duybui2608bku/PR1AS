@@ -36,8 +36,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get user profile
-    const { data: profile, error: profileError } = await supabase
+    const adminClient = createAdminClient();
+    const { data: profile, error: profileError } = await adminClient
       .from("user_profiles")
       .select("*")
       .eq("id", authData.user.id)
@@ -55,7 +55,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if account is banned
     if (profile.status === "banned") {
       return NextResponse.json(
         {
@@ -102,7 +101,6 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
-    console.error("Login error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -76,10 +76,9 @@ export default function UserManagementPage() {
       onOk: async () => {
         try {
           const banUntil = new Date();
-          banUntil.setFullYear(banUntil.getFullYear() + 100); // Ban for 100 years
-
+          banUntil.setFullYear(banUntil.getFullYear() + 100);
           const { error } = await supabase.auth.admin.updateUserById(userId, {
-            ban_duration: "876000h", // 100 years in hours
+            ban_duration: "876000h",
           });
 
           if (error) throw error;

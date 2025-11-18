@@ -18,6 +18,7 @@ import {
   message,
 } from "antd";
 import { ReloadOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import { walletAPI, walletHelpers } from "@/lib/wallet/api-client";
 import type {
   Transaction,
@@ -29,6 +30,7 @@ import dayjs from "dayjs";
 const { RangePicker } = DatePicker;
 
 export default function TransactionHistory() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [pagination, setPagination] = useState({
@@ -61,7 +63,7 @@ export default function TransactionHistory() {
         total: result.total,
       });
     } catch (error: unknown) {
-      message.error((error as Error).message ?? "Failed to load transactions");
+      message.error((error as Error).message ?? t("wallet.transaction.failed"));
     } finally {
       setLoading(false);
     }
@@ -73,14 +75,14 @@ export default function TransactionHistory() {
 
   const columns = [
     {
-      title: "Date",
+      title: t("wallet.transaction.date"),
       dataIndex: "created_at",
       key: "created_at",
       render: (date: string) => dayjs(date).format("MMM DD, YYYY HH:mm"),
       width: 200,
     },
     {
-      title: "Type",
+      title: t("wallet.transaction.type"),
       dataIndex: "type",
       key: "type",
       render: (type: TransactionType) => (
@@ -96,10 +98,10 @@ export default function TransactionHistory() {
           {walletHelpers.getTransactionTypeLabel(type)}
         </Tag>
       ),
-      width: 120,
+      width: 150,
     },
     {
-      title: "Amount",
+      title: t("wallet.transaction.amount"),
       dataIndex: "amount_usd",
       key: "amount_usd",
       render: (amount: number, record: Transaction) => (
@@ -124,7 +126,7 @@ export default function TransactionHistory() {
       width: 120,
     },
     {
-      title: "Status",
+      title: t("wallet.transaction.status"),
       dataIndex: "status",
       key: "status",
       render: (status: TransactionStatus) => (
@@ -132,24 +134,24 @@ export default function TransactionHistory() {
           {status.toUpperCase()}
         </Tag>
       ),
-      width: 100,
+      width: 120,
     },
     {
-      title: "Payment Method",
+      title: t("wallet.transaction.paymentMethod"),
       dataIndex: "payment_method",
       key: "payment_method",
       render: (method?: string) =>
         method ? <Tag>{method.replace("_", " ").toUpperCase()}</Tag> : "-",
-      width: 150,
+      width: 200,
     },
     {
-      title: "Description",
+      title: t("wallet.transaction.description"),
       dataIndex: "description",
       key: "description",
       ellipsis: true,
     },
     {
-      title: "Balance After",
+      title: t("wallet.transaction.balanceAfter"),
       dataIndex: "balance_after_usd",
       key: "balance_after_usd",
       render: (balance: number) => walletHelpers.formatUSD(balance),
@@ -159,14 +161,14 @@ export default function TransactionHistory() {
 
   return (
     <Card
-      title="Transaction History"
+      title={t("wallet.transaction.title")}
       extra={
         <Button
           icon={<ReloadOutlined />}
           onClick={() => loadTransactions(pagination.current)}
           loading={loading}
         >
-          Refresh
+          {t("wallet.transaction.refresh")}
         </Button>
       }
     >
@@ -175,35 +177,65 @@ export default function TransactionHistory() {
         <Space wrap>
           <Select
             style={{ width: 200 }}
-            placeholder="Filter by type"
+            placeholder={t("wallet.transaction.filterByType")}
             mode="multiple"
             allowClear
             onChange={(value) =>
               setFilters({ ...filters, type: value as TransactionType[] })
             }
             options={[
-              { label: "Deposit", value: "deposit" },
-              { label: "Withdrawal", value: "withdrawal" },
-              { label: "Payment", value: "payment" },
-              { label: "Earning", value: "earning" },
-              { label: "Platform Fee", value: "platform_fee" },
-              { label: "Refund", value: "refund" },
+              {
+                label: t("wallet.transaction.types.deposit"),
+                value: "deposit",
+              },
+              {
+                label: t("wallet.transaction.types.withdrawal"),
+                value: "withdrawal",
+              },
+              {
+                label: t("wallet.transaction.types.payment"),
+                value: "payment",
+              },
+              {
+                label: t("wallet.transaction.types.earning"),
+                value: "earning",
+              },
+              {
+                label: t("wallet.transaction.types.platformFee"),
+                value: "platform_fee",
+              },
+              { label: t("wallet.transaction.types.refund"), value: "refund" },
             ]}
           />
           <Select
             style={{ width: 150 }}
-            placeholder="Filter by status"
+            placeholder={t("wallet.transaction.filterByStatus")}
             mode="multiple"
             allowClear
             onChange={(value) =>
               setFilters({ ...filters, status: value as TransactionStatus[] })
             }
             options={[
-              { label: "Pending", value: "pending" },
-              { label: "Processing", value: "processing" },
-              { label: "Completed", value: "completed" },
-              { label: "Failed", value: "failed" },
-              { label: "Cancelled", value: "cancelled" },
+              {
+                label: t("wallet.transaction.statuses.pending"),
+                value: "pending",
+              },
+              {
+                label: t("wallet.transaction.statuses.processing"),
+                value: "processing",
+              },
+              {
+                label: t("wallet.transaction.statuses.completed"),
+                value: "completed",
+              },
+              {
+                label: t("wallet.transaction.statuses.failed"),
+                value: "failed",
+              },
+              {
+                label: t("wallet.transaction.statuses.cancelled"),
+                value: "cancelled",
+              },
             ]}
           />
           <RangePicker
@@ -232,7 +264,8 @@ export default function TransactionHistory() {
           pagination={{
             ...pagination,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} transactions`,
+            showTotal: (total) =>
+              t("wallet.transaction.total", { count: total }),
             onChange: (page, pageSize) => {
               setPagination({ ...pagination, current: page, pageSize });
               loadTransactions(page);

@@ -1,10 +1,37 @@
+"use client";
+
 import { Typography, Row, Col } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
-import { STEPS } from "../constants";
+import { useTranslation } from "react-i18next";
 
 const { Title, Paragraph } = Typography;
 
 export default function HowItWorksSection() {
+  const { t } = useTranslation();
+
+  const STEPS = [
+    {
+      number: "01",
+      titleKey: "home.howItWorks.steps.step1.title",
+      descriptionKey: "home.howItWorks.steps.step1.description",
+    },
+    {
+      number: "02",
+      titleKey: "home.howItWorks.steps.step2.title",
+      descriptionKey: "home.howItWorks.steps.step2.description",
+    },
+    {
+      number: "03",
+      titleKey: "home.howItWorks.steps.step3.title",
+      descriptionKey: "home.howItWorks.steps.step3.description",
+    },
+    {
+      number: "04",
+      titleKey: "home.howItWorks.steps.step4.title",
+      descriptionKey: "home.howItWorks.steps.step4.description",
+    },
+  ];
+
   return (
     <section className="py-12 sm:py-16 md:py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -13,10 +40,10 @@ export default function HowItWorksSection() {
             level={2}
             className="!text-3xl sm:!text-4xl md:!text-5xl !font-bold !mb-3 sm:!mb-4"
           >
-            Cách Thức Hoạt Động
+            {t("home.howItWorks.title")}
           </Title>
           <Paragraph className="!text-base sm:!text-lg md:!text-xl !text-gray-600 max-w-2xl mx-auto px-4">
-            Chỉ 4 bước đơn giản để có được dịch vụ hoàn hảo
+            {t("home.howItWorks.subtitle")}
           </Paragraph>
         </div>
 
@@ -36,10 +63,10 @@ export default function HowItWorksSection() {
                   level={4}
                   className="!text-lg sm:!text-xl !mb-2 sm:!mb-3"
                 >
-                  {step.title}
+                  {t(step.titleKey)}
                 </Title>
                 <Paragraph className="!text-gray-600 !text-sm sm:!text-base">
-                  {step.description}
+                  {t(step.descriptionKey)}
                 </Paragraph>
               </div>
             </Col>
@@ -49,7 +76,7 @@ export default function HowItWorksSection() {
         <div className="text-center mt-8 sm:mt-12">
           <CheckCircleOutlined className="text-5xl sm:text-6xl text-green-500 mb-3 sm:mb-4" />
           <Title level={4} className="!text-xl sm:!text-2xl !text-gray-700">
-            Đơn giản, nhanh chóng và hiệu quả!
+            {t("home.howItWorks.finalText")}
           </Title>
         </div>
       </div>
