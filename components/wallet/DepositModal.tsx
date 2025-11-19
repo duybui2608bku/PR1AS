@@ -50,9 +50,9 @@ export default function DepositModal({
       );
 
       setBankDeposit(result.deposit);
-      message.success(t('wallet.deposit.qrSuccess'));
+      message.success(t("wallet.deposit.qrSuccess"));
     } catch (error) {
-      const errorMessage = getErrorMessage(error, t('wallet.deposit.failed'));
+      const errorMessage = getErrorMessage(error, t("wallet.deposit.failed"));
       message.error(errorMessage);
     } finally {
       setLoading(false);
@@ -66,7 +66,7 @@ export default function DepositModal({
 
       window.location.href = result.approval_url;
     } catch (error) {
-      const errorMessage = getErrorMessage(error, t('wallet.deposit.failed'));
+      const errorMessage = getErrorMessage(error, t("wallet.deposit.failed"));
       message.error(errorMessage);
       setLoading(false);
     }
@@ -87,7 +87,7 @@ export default function DepositModal({
 
   return (
     <Modal
-      title={t('wallet.deposit.title')}
+      title={t("wallet.deposit.title")}
       open={open}
       onCancel={handleClose}
       footer={null}
@@ -100,7 +100,7 @@ export default function DepositModal({
               key: "bank",
               label: (
                 <span>
-                  <BankOutlined /> {t('wallet.deposit.bankTransfer')}
+                  <BankOutlined /> {t("wallet.deposit.bankTransfer")}
                 </span>
               ),
               children: (
@@ -110,21 +110,24 @@ export default function DepositModal({
                   onFinish={handleBankDeposit}
                 >
                   <Form.Item
-                    label={t('wallet.deposit.amount')}
+                    label={t("wallet.deposit.amount")}
                     name="amount_usd"
                     rules={[
-                      { required: true, message: t('wallet.deposit.amountRequired') },
+                      {
+                        required: true,
+                        message: t("wallet.deposit.amountRequired"),
+                      },
                       {
                         type: "number",
                         min: 10,
-                        message: t('wallet.deposit.minimumDeposit'),
+                        message: t("wallet.deposit.minimumDeposit"),
                       },
                     ]}
                   >
                     <InputNumber
                       style={{ width: "100%" }}
                       prefix="$"
-                      placeholder={t('wallet.deposit.amountPlaceholder')}
+                      placeholder={t("wallet.deposit.amountPlaceholder")}
                       min={10}
                       step={10}
                     />
@@ -132,8 +135,8 @@ export default function DepositModal({
 
                   <Form.Item>
                     <Alert
-                      message={t('wallet.deposit.bankInfo')}
-                      description={t('wallet.deposit.bankInfoDesc')}
+                      message={t("wallet.deposit.bankInfo")}
+                      description={t("wallet.deposit.bankInfoDesc")}
                       type="info"
                       showIcon
                     />
@@ -147,7 +150,7 @@ export default function DepositModal({
                       block
                       size="large"
                     >
-                      {t('wallet.deposit.generateQR')}
+                      {t("wallet.deposit.generateQR")}
                     </Button>
                   </Form.Item>
                 </Form>
@@ -157,7 +160,7 @@ export default function DepositModal({
               key: "paypal",
               label: (
                 <span>
-                  <CreditCardOutlined /> {t('wallet.deposit.paypal')}
+                  <CreditCardOutlined /> {t("wallet.deposit.paypal")}
                 </span>
               ),
               children: (
@@ -167,21 +170,24 @@ export default function DepositModal({
                   onFinish={handlePayPalDeposit}
                 >
                   <Form.Item
-                    label={t('wallet.deposit.amount')}
+                    label={t("wallet.deposit.amount")}
                     name="amount_usd"
                     rules={[
-                      { required: true, message: t('wallet.deposit.amountRequired') },
+                      {
+                        required: true,
+                        message: t("wallet.deposit.amountRequired"),
+                      },
                       {
                         type: "number",
                         min: 10,
-                        message: t('wallet.deposit.minimumDeposit'),
+                        message: t("wallet.deposit.minimumDeposit"),
                       },
                     ]}
                   >
                     <InputNumber
                       style={{ width: "100%" }}
                       prefix="$"
-                      placeholder={t('wallet.deposit.amountPlaceholder')}
+                      placeholder={t("wallet.deposit.amountPlaceholder")}
                       min={10}
                       step={10}
                     />
@@ -189,8 +195,8 @@ export default function DepositModal({
 
                   <Form.Item>
                     <Alert
-                      message={t('wallet.deposit.paypalInfo')}
-                      description={t('wallet.deposit.paypalInfoDesc')}
+                      message={t("wallet.deposit.paypalInfo")}
+                      description={t("wallet.deposit.paypalInfoDesc")}
                       type="info"
                       showIcon
                     />
@@ -204,7 +210,7 @@ export default function DepositModal({
                       block
                       size="large"
                     >
-                      {t('wallet.deposit.payWithPayPal')}
+                      {t("wallet.deposit.payWithPayPal")}
                     </Button>
                   </Form.Item>
                 </Form>
@@ -214,14 +220,7 @@ export default function DepositModal({
         />
       ) : (
         <Space direction="vertical" style={{ width: "100%" }} size="large">
-          <Alert
-            message={t('wallet.deposit.scanQR')}
-            description={t('wallet.deposit.scanQRDesc', { 
-              amount: walletHelpers.formatVND(bankDeposit.amount_vnd || 0)
-            })}
-            type="success"
-            showIcon
-          />
+          <Alert message={t("wallet.deposit.scanQR")} type="success" showIcon />
 
           <div
             style={{
@@ -238,10 +237,10 @@ export default function DepositModal({
               width={400}
               height={400}
               style={{
-                width: "100%",
+                width: "100px",
                 height: "auto",
               }}
-              unoptimized // Sepay URL is external, disable Next.js optimization
+              unoptimized
             />
           </div>
 
@@ -253,17 +252,19 @@ export default function DepositModal({
             }}
           >
             <p>
-              <strong>{t('wallet.deposit.bank')}:</strong> {bankDeposit.bank_name}
+              <strong>{t("wallet.deposit.bank")}:</strong>{" "}
+              {bankDeposit.bank_name}
             </p>
             <p>
-              <strong>{t('wallet.deposit.account')}:</strong> {bankDeposit.bank_account}
+              <strong>{t("wallet.deposit.account")}:</strong>{" "}
+              {bankDeposit.bank_account}
             </p>
             <p>
-              <strong>{t('wallet.deposit.amount')}:</strong>{" "}
+              <strong>{t("wallet.deposit.amount")}:</strong>{" "}
               {walletHelpers.formatVND(bankDeposit.amount_vnd || 0)}
             </p>
             <p>
-              <strong>{t('wallet.deposit.transferContent')}:</strong>{" "}
+              <strong>{t("wallet.deposit.transferContent")}:</strong>{" "}
               <code
                 style={{
                   background: "#fff",
@@ -277,20 +278,20 @@ export default function DepositModal({
             <p
               style={{ fontSize: "12px", color: "#8c8c8c", marginTop: "12px" }}
             >
-              {t('wallet.deposit.importantNote')}
+              {t("wallet.deposit.importantNote")}
             </p>
           </div>
 
           <Alert
-            message={t('wallet.deposit.autoConfirm')}
-            description={t('wallet.deposit.autoConfirmDesc')}
+            message={t("wallet.deposit.autoConfirm")}
+            description={t("wallet.deposit.autoConfirmDesc")}
             type="info"
           />
 
           <Space style={{ width: "100%", justifyContent: "center" }}>
-            <Button onClick={handleClose}>{t('wallet.deposit.close')}</Button>
+            <Button onClick={handleClose}>{t("wallet.deposit.close")}</Button>
             <Button type="primary" onClick={handleSuccess}>
-              {t('wallet.deposit.completed')}
+              {t("wallet.deposit.completed")}
             </Button>
           </Space>
         </Space>

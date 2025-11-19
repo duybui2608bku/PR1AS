@@ -3,12 +3,10 @@
  * Handles all worker profile-related business logic and database operations
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { SupabaseClient } from "@supabase/supabase-js";
 import {
   WorkerProfile,
   WorkerProfileComplete,
-  WorkerTag,
-  WorkerAvailability,
   WorkerImage,
   WorkerService,
   WorkerServicePrice,
@@ -20,14 +18,22 @@ import {
   UpdateServicePriceRequest,
   PriceTiers,
   ServiceWithPrice,
-} from './types';
+} from "./types";
 import {
   WorkerProfileStatus,
   Currency,
   HOURS_PER_DAY,
   HOURS_PER_WEEK,
   HOURS_PER_MONTH,
-} from '@/lib/utils/enums';
+} from "@/lib/utils/enums";
+
+type WorkerServiceRow = WorkerService & {
+  service: Service;
+  service_option: ServiceOption | null;
+  pricing: WorkerServicePrice | null;
+};
+
+type PriceFieldKey = Extract<keyof WorkerServicePrice, `price_${string}`>;
 
 // =============================================================================
 // CUSTOM ERRORS
@@ -40,7 +46,7 @@ export class WorkerServiceError extends Error {
     public statusCode: number = 500
   ) {
     super(message);
-    this.name = 'WorkerServiceError';
+    this.name = "WorkerServiceError";
   }
 }
 
@@ -49,7 +55,7 @@ export class WorkerServiceError extends Error {
 // =============================================================================
 
 export class WorkerProfileService {
-  constructor(private supabase: ReturnType<typeof createClient>) {}
+  constructor(private supabase: SupabaseClient) {}
 
   // ===========================================================================
   // SERVICES (PUBLIC - Get available services)
@@ -60,13 +66,17 @@ export class WorkerProfileService {
    */
   async getServiceCategories(): Promise<ServiceCategory[]> {
     const { data, error } = await this.supabase
-      .from('service_categories')
-      .select('*')
-      .eq('is_active', true)
-      .order('display_order');
+      .from("service_categories")
+      .select("*")
+      .eq("is_active", true)
+      .order("display_order");
 
     if (error) {
-      throw new WorkerServiceError('Failed to fetch service categories', 'FETCH_ERROR', 500);
+      throw new WorkerServiceError(
+        "Failed to fetch service categories",
+        "FETCH_ERROR",
+        500
+      );
     }
 
     return data as ServiceCategory[];
@@ -77,23 +87,29 @@ export class WorkerProfileService {
    */
   async getServices(categoryId?: string): Promise<Service[]> {
     let query = this.supabase
-      .from('services')
-      .select(`
+      .from("services")
+      .select(
+        `
         *,
         category:service_categories(*),
         options:service_options(*)
-      `)
-      .eq('is_active', true)
-      .order('display_order');
+      `
+      )
+      .eq("is_active", true)
+      .order("display_order");
 
     if (categoryId) {
-      query = query.eq('category_id', categoryId);
+      query = query.eq("category_id", categoryId);
     }
 
     const { data, error } = await query;
 
     if (error) {
-      throw new WorkerServiceError('Failed to fetch services', 'FETCH_ERROR', 500);
+      throw new WorkerServiceError(
+        "Failed to fetch services",
+        "FETCH_ERROR",
+        500
+      );
     }
 
     return data as Service[];
@@ -104,18 +120,20 @@ export class WorkerProfileService {
    */
   async getServiceById(serviceId: string): Promise<Service> {
     const { data, error } = await this.supabase
-      .from('services')
-      .select(`
+      .from("services")
+      .select(
+        `
         *,
         category:service_categories(*),
         options:service_options(*)
-      `)
-      .eq('id', serviceId)
-      .eq('is_active', true)
+      `
+      )
+      .eq("id", serviceId)
+      .eq("is_active", true)
       .single();
 
     if (error || !data) {
-      throw new WorkerServiceError('Service not found', 'NOT_FOUND', 404);
+      throw new WorkerServiceError("Service not found", "NOT_FOUND", 404);
     }
 
     return data as Service;
@@ -126,14 +144,18 @@ export class WorkerProfileService {
    */
   async getServiceOptions(serviceId: string): Promise<ServiceOption[]> {
     const { data, error } = await this.supabase
-      .from('service_options')
-      .select('*')
-      .eq('service_id', serviceId)
-      .eq('is_active', true)
-      .order('display_order');
+      .from("service_options")
+      .select("*")
+      .eq("service_id", serviceId)
+      .eq("is_active", true)
+      .order("display_order");
 
     if (error) {
-      throw new WorkerServiceError('Failed to fetch service options', 'FETCH_ERROR', 500);
+      throw new WorkerServiceError(
+        "Failed to fetch service options",
+        "FETCH_ERROR",
+        500
+      );
     }
 
     return data as ServiceOption[];
@@ -152,9 +174,9 @@ export class WorkerProfileService {
   ): Promise<WorkerProfile> {
     // Check if profile exists
     const { data: existingProfile } = await this.supabase
-      .from('worker_profiles')
-      .select('id')
-      .eq('user_id', userId)
+      .from("worker_profiles")
+      .select("id")
+      .eq("user_id", userId)
       .single();
 
     const profileData = {
@@ -174,14 +196,18 @@ export class WorkerProfileService {
     if (existingProfile) {
       // Update existing profile
       const { data: updated, error } = await this.supabase
-        .from('worker_profiles')
+        .from("worker_profiles")
         .update(profileData)
-        .eq('user_id', userId)
+        .eq("user_id", userId)
         .select()
         .single();
 
       if (error) {
-        throw new WorkerServiceError('Failed to update profile', 'UPDATE_ERROR', 500);
+        throw new WorkerServiceError(
+          "Failed to update profile",
+          "UPDATE_ERROR",
+          500
+        );
       }
 
       // Update tags and availabilities
@@ -196,13 +222,17 @@ export class WorkerProfileService {
     } else {
       // Create new profile
       const { data: created, error } = await this.supabase
-        .from('worker_profiles')
+        .from("worker_profiles")
         .insert(profileData)
         .select()
         .single();
 
       if (error) {
-        throw new WorkerServiceError('Failed to create profile', 'CREATE_ERROR', 500);
+        throw new WorkerServiceError(
+          "Failed to create profile",
+          "CREATE_ERROR",
+          500
+        );
       }
 
       // Add tags and availabilities
@@ -220,10 +250,13 @@ export class WorkerProfileService {
   /**
    * Get worker profile by user ID
    */
-  async getWorkerProfile(userId: string): Promise<WorkerProfileComplete | null> {
+  async getWorkerProfile(
+    userId: string
+  ): Promise<WorkerProfileComplete | null> {
     const { data, error } = await this.supabase
-      .from('worker_profiles')
-      .select(`
+      .from("worker_profiles")
+      .select(
+        `
         *,
         tags:worker_tags(*),
         availabilities:worker_availabilities(*),
@@ -234,22 +267,29 @@ export class WorkerProfileService {
           service_option:service_options(*),
           pricing:worker_service_prices(*)
         )
-      `)
-      .eq('user_id', userId)
+      `
+      )
+      .eq("user_id", userId)
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') {
+      if (error.code === "PGRST116") {
         return null; // Profile not found
       }
-      throw new WorkerServiceError('Failed to fetch profile', 'FETCH_ERROR', 500);
+      throw new WorkerServiceError(
+        "Failed to fetch profile",
+        "FETCH_ERROR",
+        500
+      );
     }
 
     const profile = data as unknown as WorkerProfileComplete;
 
     // Separate avatar from gallery
-    profile.avatar = profile.images?.find(img => img.image_type === 'avatar');
-    profile.gallery_images = profile.images?.filter(img => img.image_type === 'gallery');
+    profile.avatar = profile.images?.find((img) => img.image_type === "avatar");
+    profile.gallery_images = profile.images?.filter(
+      (img) => img.image_type === "gallery"
+    );
 
     return profile;
   }
@@ -257,10 +297,13 @@ export class WorkerProfileService {
   /**
    * Get worker profile by ID (for public viewing)
    */
-  async getWorkerProfileById(profileId: string): Promise<WorkerProfileComplete | null> {
+  async getWorkerProfileById(
+    profileId: string
+  ): Promise<WorkerProfileComplete | null> {
     const { data, error } = await this.supabase
-      .from('worker_profiles')
-      .select(`
+      .from("worker_profiles")
+      .select(
+        `
         *,
         tags:worker_tags(*),
         availabilities:worker_availabilities(*),
@@ -271,23 +314,30 @@ export class WorkerProfileService {
           service_option:service_options(*),
           pricing:worker_service_prices(*)
         )
-      `)
-      .eq('id', profileId)
-      .eq('profile_status', WorkerProfileStatus.PUBLISHED)
-      .eq('images.is_approved', true)
-      .eq('services.is_active', true)
+      `
+      )
+      .eq("id", profileId)
+      .eq("profile_status", WorkerProfileStatus.PUBLISHED)
+      .eq("images.is_approved", true)
+      .eq("services.is_active", true)
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') {
+      if (error.code === "PGRST116") {
         return null;
       }
-      throw new WorkerServiceError('Failed to fetch profile', 'FETCH_ERROR', 500);
+      throw new WorkerServiceError(
+        "Failed to fetch profile",
+        "FETCH_ERROR",
+        500
+      );
     }
 
     const profile = data as unknown as WorkerProfileComplete;
-    profile.avatar = profile.images?.find(img => img.image_type === 'avatar');
-    profile.gallery_images = profile.images?.filter(img => img.image_type === 'gallery');
+    profile.avatar = profile.images?.find((img) => img.image_type === "avatar");
+    profile.gallery_images = profile.images?.filter(
+      (img) => img.image_type === "gallery"
+    );
 
     return profile;
   }
@@ -299,32 +349,46 @@ export class WorkerProfileService {
     // Check if profile is complete
     const profile = await this.getWorkerProfile(userId);
     if (!profile) {
-      throw new WorkerServiceError('Profile not found', 'NOT_FOUND', 404);
+      throw new WorkerServiceError("Profile not found", "NOT_FOUND", 404);
     }
 
     // Validate profile completeness
-    const hasAvatar = profile.images?.some(img => img.image_type === 'avatar');
+    const hasAvatar = profile.images?.some(
+      (img) => img.image_type === "avatar"
+    );
     const hasServices = profile.services && profile.services.length > 0;
 
     if (!hasAvatar) {
-      throw new WorkerServiceError('Profile must have an avatar', 'VALIDATION_ERROR', 400);
+      throw new WorkerServiceError(
+        "Profile must have an avatar",
+        "VALIDATION_ERROR",
+        400
+      );
     }
 
     if (!hasServices) {
-      throw new WorkerServiceError('Profile must have at least one service', 'VALIDATION_ERROR', 400);
+      throw new WorkerServiceError(
+        "Profile must have at least one service",
+        "VALIDATION_ERROR",
+        400
+      );
     }
 
     // Update status to pending
     const { error } = await this.supabase
-      .from('worker_profiles')
+      .from("worker_profiles")
       .update({
         profile_status: WorkerProfileStatus.PENDING,
-        profile_completed_steps: 3 // Both steps completed
+        profile_completed_steps: 3, // Both steps completed
       })
-      .eq('user_id', userId);
+      .eq("user_id", userId);
 
     if (error) {
-      throw new WorkerServiceError('Failed to submit profile', 'UPDATE_ERROR', 500);
+      throw new WorkerServiceError(
+        "Failed to submit profile",
+        "UPDATE_ERROR",
+        500
+      );
     }
   }
 
@@ -333,13 +397,17 @@ export class WorkerProfileService {
    */
   async publishProfile(userId: string): Promise<void> {
     const { error } = await this.supabase
-      .from('worker_profiles')
+      .from("worker_profiles")
       .update({ profile_status: WorkerProfileStatus.PUBLISHED })
-      .eq('user_id', userId)
-      .eq('profile_status', WorkerProfileStatus.APPROVED);
+      .eq("user_id", userId)
+      .eq("profile_status", WorkerProfileStatus.APPROVED);
 
     if (error) {
-      throw new WorkerServiceError('Failed to publish profile', 'UPDATE_ERROR', 500);
+      throw new WorkerServiceError(
+        "Failed to publish profile",
+        "UPDATE_ERROR",
+        500
+      );
     }
   }
 
@@ -353,23 +421,25 @@ export class WorkerProfileService {
   ): Promise<void> {
     // Delete existing tags
     await this.supabase
-      .from('worker_tags')
+      .from("worker_tags")
       .delete()
-      .eq('worker_profile_id', profileId);
+      .eq("worker_profile_id", profileId);
 
     // Insert new tags
     if (tags.length > 0) {
-      const { error } = await this.supabase
-        .from('worker_tags')
-        .insert(
-          tags.map(tag => ({
-            worker_profile_id: profileId,
-            ...tag,
-          }))
-        );
+      const { error } = await this.supabase.from("worker_tags").insert(
+        tags.map((tag) => ({
+          worker_profile_id: profileId,
+          ...tag,
+        }))
+      );
 
       if (error) {
-        throw new WorkerServiceError('Failed to update tags', 'UPDATE_ERROR', 500);
+        throw new WorkerServiceError(
+          "Failed to update tags",
+          "UPDATE_ERROR",
+          500
+        );
       }
     }
   }
@@ -390,23 +460,27 @@ export class WorkerProfileService {
   ): Promise<void> {
     // Delete existing availabilities
     await this.supabase
-      .from('worker_availabilities')
+      .from("worker_availabilities")
       .delete()
-      .eq('worker_profile_id', profileId);
+      .eq("worker_profile_id", profileId);
 
     // Insert new availabilities
     if (availabilities.length > 0) {
       const { error } = await this.supabase
-        .from('worker_availabilities')
+        .from("worker_availabilities")
         .insert(
-          availabilities.map(avail => ({
+          availabilities.map((avail) => ({
             worker_profile_id: profileId,
             ...avail,
           }))
         );
 
       if (error) {
-        throw new WorkerServiceError('Failed to update availabilities', 'UPDATE_ERROR', 500);
+        throw new WorkerServiceError(
+          "Failed to update availabilities",
+          "UPDATE_ERROR",
+          500
+        );
       }
     }
   }
@@ -431,16 +505,16 @@ export class WorkerProfileService {
     }
   ): Promise<WorkerImage> {
     // If adding avatar, remove existing avatar
-    if (imageData.image_type === 'avatar') {
+    if (imageData.image_type === "avatar") {
       await this.supabase
-        .from('worker_images')
+        .from("worker_images")
         .delete()
-        .eq('worker_profile_id', profileId)
-        .eq('image_type', 'avatar');
+        .eq("worker_profile_id", profileId)
+        .eq("image_type", "avatar");
     }
 
     const { data, error } = await this.supabase
-      .from('worker_images')
+      .from("worker_images")
       .insert({
         worker_profile_id: profileId,
         display_order: 0,
@@ -450,7 +524,7 @@ export class WorkerProfileService {
       .single();
 
     if (error) {
-      throw new WorkerServiceError('Failed to add image', 'CREATE_ERROR', 500);
+      throw new WorkerServiceError("Failed to add image", "CREATE_ERROR", 500);
     }
 
     return data as WorkerImage;
@@ -461,12 +535,16 @@ export class WorkerProfileService {
    */
   async deleteWorkerImage(imageId: string): Promise<void> {
     const { error } = await this.supabase
-      .from('worker_images')
+      .from("worker_images")
       .delete()
-      .eq('id', imageId);
+      .eq("id", imageId);
 
     if (error) {
-      throw new WorkerServiceError('Failed to delete image', 'DELETE_ERROR', 500);
+      throw new WorkerServiceError(
+        "Failed to delete image",
+        "DELETE_ERROR",
+        500
+      );
     }
   }
 
@@ -483,20 +561,24 @@ export class WorkerProfileService {
   ): Promise<{ service: WorkerService; pricing: WorkerServicePrice }> {
     // Check if service already exists
     const { data: existing } = await this.supabase
-      .from('worker_services')
-      .select('id')
-      .eq('worker_profile_id', profileId)
-      .eq('service_id', serviceData.service_id)
-      .eq('service_option_id', serviceData.service_option_id || null)
+      .from("worker_services")
+      .select("id")
+      .eq("worker_profile_id", profileId)
+      .eq("service_id", serviceData.service_id)
+      .eq("service_option_id", serviceData.service_option_id || null)
       .single();
 
     if (existing) {
-      throw new WorkerServiceError('Service already added', 'DUPLICATE_ERROR', 400);
+      throw new WorkerServiceError(
+        "Service already added",
+        "DUPLICATE_ERROR",
+        400
+      );
     }
 
     // Add service
     const { data: service, error: serviceError } = await this.supabase
-      .from('worker_services')
+      .from("worker_services")
       .insert({
         worker_profile_id: profileId,
         service_id: serviceData.service_id,
@@ -507,7 +589,11 @@ export class WorkerProfileService {
       .single();
 
     if (serviceError) {
-      throw new WorkerServiceError('Failed to add service', 'CREATE_ERROR', 500);
+      throw new WorkerServiceError(
+        "Failed to add service",
+        "CREATE_ERROR",
+        500
+      );
     }
 
     // Add pricing
@@ -521,22 +607,26 @@ export class WorkerProfileService {
     );
 
     const { data: pricing, error: pricingError } = await this.supabase
-      .from('worker_service_prices')
+      .from("worker_service_prices")
       .insert(priceData)
       .select()
       .single();
 
     if (pricingError) {
       // Rollback service creation
-      await this.supabase.from('worker_services').delete().eq('id', service.id);
-      throw new WorkerServiceError('Failed to add pricing', 'CREATE_ERROR', 500);
+      await this.supabase.from("worker_services").delete().eq("id", service.id);
+      throw new WorkerServiceError(
+        "Failed to add pricing",
+        "CREATE_ERROR",
+        500
+      );
     }
 
     // Update profile completed steps
     await this.supabase
-      .from('worker_profiles')
+      .from("worker_profiles")
       .update({ profile_completed_steps: 3 })
-      .eq('id', profileId);
+      .eq("id", profileId);
 
     return {
       service: service as WorkerService,
@@ -561,14 +651,18 @@ export class WorkerProfileService {
     );
 
     const { data, error } = await this.supabase
-      .from('worker_service_prices')
+      .from("worker_service_prices")
       .update(priceData)
-      .eq('worker_service_id', workerServiceId)
+      .eq("worker_service_id", workerServiceId)
       .select()
       .single();
 
     if (error) {
-      throw new WorkerServiceError('Failed to update pricing', 'UPDATE_ERROR', 500);
+      throw new WorkerServiceError(
+        "Failed to update pricing",
+        "UPDATE_ERROR",
+        500
+      );
     }
 
     return data as WorkerServicePrice;
@@ -579,12 +673,16 @@ export class WorkerProfileService {
    */
   async removeWorkerService(workerServiceId: string): Promise<void> {
     const { error } = await this.supabase
-      .from('worker_services')
+      .from("worker_services")
       .delete()
-      .eq('id', workerServiceId);
+      .eq("id", workerServiceId);
 
     if (error) {
-      throw new WorkerServiceError('Failed to remove service', 'DELETE_ERROR', 500);
+      throw new WorkerServiceError(
+        "Failed to remove service",
+        "DELETE_ERROR",
+        500
+      );
     }
   }
 
@@ -593,25 +691,35 @@ export class WorkerProfileService {
    */
   async getWorkerServices(profileId: string): Promise<ServiceWithPrice[]> {
     const { data, error } = await this.supabase
-      .from('worker_services')
-      .select(`
+      .from("worker_services")
+      .select(
+        `
         *,
         service:services(*),
         service_option:service_options(*),
         pricing:worker_service_prices(*)
-      `)
-      .eq('worker_profile_id', profileId)
-      .eq('is_active', true);
+      `
+      )
+      .eq("worker_profile_id", profileId)
+      .eq("is_active", true);
 
     if (error) {
-      throw new WorkerServiceError('Failed to fetch worker services', 'FETCH_ERROR', 500);
+      throw new WorkerServiceError(
+        "Failed to fetch worker services",
+        "FETCH_ERROR",
+        500
+      );
     }
 
-    return (data || []).map((ws: any) => ({
+    const rows = (data ?? []) as WorkerServiceRow[];
+
+    return rows.map((ws) => ({
       ...ws.service,
       worker_service: ws,
-      pricing: ws.pricing,
-      price_tiers: ws.pricing ? this.calculatePriceTiers(ws.pricing) : undefined,
+      pricing: ws.pricing ?? undefined,
+      price_tiers: ws.pricing
+        ? this.calculatePriceTiers(ws.pricing)
+        : undefined,
     })) as ServiceWithPrice[];
   }
 
@@ -630,7 +738,11 @@ export class WorkerProfileService {
     weeklyDiscount = 0,
     monthlyDiscount = 0
   ): Partial<WorkerServicePrice> {
-    const priceData: any = {
+    type PriceData = Partial<WorkerServicePrice> & {
+      worker_service_id: string;
+    };
+
+    const priceData: PriceData = {
       worker_service_id: workerServiceId,
       primary_currency: primaryCurrency,
       daily_discount_percent: dailyDiscount,
@@ -640,7 +752,8 @@ export class WorkerProfileService {
     };
 
     // Set price in primary currency
-    const currencyKey = `price_${primaryCurrency.toLowerCase()}`;
+    const currencyKey =
+      `price_${primaryCurrency.toLowerCase()}` as PriceFieldKey;
     priceData[currencyKey] = hourlyRate;
 
     return priceData;
@@ -651,16 +764,26 @@ export class WorkerProfileService {
    */
   calculatePriceTiers(pricing: WorkerServicePrice): PriceTiers {
     // Get hourly rate from primary currency
-    const currencyKey = `price_${pricing.primary_currency.toLowerCase()}` as keyof WorkerServicePrice;
+    const currencyKey =
+      `price_${pricing.primary_currency.toLowerCase()}` as keyof WorkerServicePrice;
     const hourlyRate = pricing[currencyKey] as number;
 
     if (!hourlyRate) {
-      throw new WorkerServiceError('No price set for primary currency', 'VALIDATION_ERROR', 400);
+      throw new WorkerServiceError(
+        "No price set for primary currency",
+        "VALIDATION_ERROR",
+        400
+      );
     }
 
-    const daily = hourlyRate * HOURS_PER_DAY * (1 - pricing.daily_discount_percent / 100);
-    const weekly = hourlyRate * HOURS_PER_WEEK * (1 - pricing.weekly_discount_percent / 100);
-    const monthly = hourlyRate * HOURS_PER_MONTH * (1 - pricing.monthly_discount_percent / 100);
+    const daily =
+      hourlyRate * HOURS_PER_DAY * (1 - pricing.daily_discount_percent / 100);
+    const weekly =
+      hourlyRate * HOURS_PER_WEEK * (1 - pricing.weekly_discount_percent / 100);
+    const monthly =
+      hourlyRate *
+      HOURS_PER_MONTH *
+      (1 - pricing.monthly_discount_percent / 100);
 
     return {
       hourly: Math.round(hourlyRate * 100) / 100,
@@ -674,13 +797,17 @@ export class WorkerProfileService {
   /**
    * Get highest price among worker's services
    */
-  async getHighestServicePrice(profileId: string, currency: Currency): Promise<number> {
+  async getHighestServicePrice(
+    profileId: string,
+    currency: Currency
+  ): Promise<number> {
     const services = await this.getWorkerServices(profileId);
 
     let maxPrice = 0;
     for (const service of services) {
       if (service.pricing) {
-        const currencyKey = `price_${currency.toLowerCase()}` as keyof WorkerServicePrice;
+        const currencyKey =
+          `price_${currency.toLowerCase()}` as keyof WorkerServicePrice;
         const price = service.pricing[currencyKey] as number;
         if (price && price > maxPrice) {
           maxPrice = price;

@@ -121,7 +121,7 @@ export default function AdminLayout({
   useEffect(() => {
     checkAuth();
     // Force admin panel to always use Vietnamese
-    i18n.changeLanguage('vi');
+    i18n.changeLanguage("vi");
   }, [checkAuth]);
 
   const handleLogout = async () => {
@@ -153,7 +153,9 @@ export default function AdminLayout({
   };
 
   if (loading) {
-    return <Loading variant="fullPage" size="large" tip={t("common.loading")} />;
+    return (
+      <Loading variant="fullPage" size="large" tip={t("common.loading")} />
+    );
   }
 
   return (
@@ -161,6 +163,7 @@ export default function AdminLayout({
       <Sider
         trigger={null}
         collapsible
+        width={240}
         collapsed={collapsed}
         style={{
           overflow: "auto",
@@ -180,6 +183,7 @@ export default function AdminLayout({
             color: "white",
             fontSize: collapsed ? 16 : 20,
             fontWeight: "bold",
+
             borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
           }}
         >
@@ -194,7 +198,7 @@ export default function AdminLayout({
         />
       </Sider>
       <Layout
-        style={{ marginLeft: collapsed ? 80 : 200, transition: "all 0.2s" }}
+        style={{ marginLeft: collapsed ? 80 : 240, transition: "all 0.2s" }}
       >
         <Header
           style={{

@@ -1,15 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Card,
-  Steps,
-  Button,
-  Typography,
-  Space,
-  Spin,
-  Result,
-} from "antd";
+import { Card, Steps, Button, Typography, Space, Spin, Result } from "antd";
 import {
   UserOutlined,
   ShoppingOutlined,
@@ -36,7 +28,6 @@ export default function WorkerProfileSetupPage() {
   const [submitting, setSubmitting] = useState(false);
   const [profile, setProfile] = useState<WorkerProfileComplete | null>(null);
 
-  // Load existing profile on mount
   useEffect(() => {
     loadProfile();
   }, []);
@@ -50,7 +41,10 @@ export default function WorkerProfileSetupPage() {
       // Determine current step based on profile_completed_steps
       if (profileData.profile_completed_steps === 0) {
         setCurrentStep(0);
-      } else if (profileData.profile_completed_steps >= 1 && profileData.profile_completed_steps < 3) {
+      } else if (
+        profileData.profile_completed_steps >= 1 &&
+        profileData.profile_completed_steps < 3
+      ) {
         setCurrentStep(1);
       } else if (profileData.profile_completed_steps === 3) {
         // Both steps completed
@@ -93,19 +87,37 @@ export default function WorkerProfileSetupPage() {
 
   if (loading) {
     return (
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "400px",
+        }}
+      >
         <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
       </div>
     );
   }
 
   // If profile is already submitted or published
-  if (profile && [WorkerProfileStatus.PENDING, WorkerProfileStatus.APPROVED, WorkerProfileStatus.PUBLISHED].includes(profile.profile_status)) {
+  if (
+    profile &&
+    [
+      WorkerProfileStatus.PENDING,
+      WorkerProfileStatus.APPROVED,
+      WorkerProfileStatus.PUBLISHED,
+    ].includes(profile.profile_status)
+  ) {
     return (
       <div style={{ maxWidth: 800, margin: "40px auto", padding: "0 20px" }}>
         <Card>
           <Result
-            status={profile.profile_status === WorkerProfileStatus.PUBLISHED ? "success" : "info"}
+            status={
+              profile.profile_status === WorkerProfileStatus.PUBLISHED
+                ? "success"
+                : "info"
+            }
             title={
               profile.profile_status === WorkerProfileStatus.PUBLISHED
                 ? t("worker.profile.published")
@@ -121,7 +133,11 @@ export default function WorkerProfileSetupPage() {
                 : t("worker.profile.approvedDesc")
             }
             extra={[
-              <Button key="dashboard" type="primary" onClick={() => router.push("/worker/dashboard")}>
+              <Button
+                key="dashboard"
+                type="primary"
+                onClick={() => router.push("/worker/dashboard")}
+              >
                 {t("common.backToDashboard")}
               </Button>,
             ]}
@@ -139,9 +155,15 @@ export default function WorkerProfileSetupPage() {
           <Result
             status="error"
             title={t("worker.profile.rejected")}
-            subTitle={profile.rejection_reason || t("worker.profile.rejectedDesc")}
+            subTitle={
+              profile.rejection_reason || t("worker.profile.rejectedDesc")
+            }
             extra={[
-              <Button key="edit" type="primary" onClick={() => setCurrentStep(0)}>
+              <Button
+                key="edit"
+                type="primary"
+                onClick={() => setCurrentStep(0)}
+              >
                 {t("worker.profile.editProfile")}
               </Button>,
             ]}
@@ -152,7 +174,7 @@ export default function WorkerProfileSetupPage() {
   }
 
   return (
-    <div style={{ maxWidth: 1000, margin: "40px auto", padding: "0 20px" }}>
+    <div style={{ margin: "40px auto", padding: "0 20px" }}>
       <Card>
         <Title level={2} style={{ textAlign: "center", marginBottom: 40 }}>
           {t("worker.profile.setupTitle")}
@@ -198,7 +220,9 @@ export default function WorkerProfileSetupPage() {
 
           {currentStep === 2 && (
             <div style={{ textAlign: "center", padding: "40px 0" }}>
-              <CheckCircleOutlined style={{ fontSize: 64, color: "#52c41a", marginBottom: 24 }} />
+              <CheckCircleOutlined
+                style={{ fontSize: 64, color: "#52c41a", marginBottom: 24 }}
+              />
               <Title level={3}>{t("worker.profile.readyToSubmit")}</Title>
               <Paragraph style={{ fontSize: 16, marginBottom: 32 }}>
                 {t("worker.profile.readyToSubmitDesc")}

@@ -11,7 +11,6 @@ import {
   Spin,
   Row,
   Col,
-  Alert,
 } from "antd";
 import {
   PlusOutlined,
@@ -31,7 +30,6 @@ import {
   WorkerProfileComplete,
   Service,
   ServiceWithPrice,
-  WorkerImage,
 } from "@/lib/worker/types";
 import { WorkerImageType } from "@/lib/utils/enums";
 import ImageUpload from "@/components/common/ImageUpload";
@@ -55,7 +53,9 @@ export default function Step2ServicesAndPricing({
   const [loading, setLoading] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
   const [workerServices, setWorkerServices] = useState<ServiceWithPrice[]>([]);
-  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(profile?.avatar?.image_url);
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(
+    profile?.avatar?.image_url
+  );
   const [galleryUrls, setGalleryUrls] = useState<string[]>(
     profile?.gallery_images?.map((img) => img.image_url) || []
   );
@@ -88,7 +88,6 @@ export default function Step2ServicesAndPricing({
       setSavingImage(true);
       setAvatarUrl(url);
 
-      // Save to database
       await workerImagesAPI.addImage({
         image_url: url,
         file_path: filePath,
@@ -107,8 +106,6 @@ export default function Step2ServicesAndPricing({
     try {
       setSavingImage(true);
       setGalleryUrls([...galleryUrls, url]);
-
-      // Save to database
       await workerImagesAPI.addImage({
         image_url: url,
         file_path: filePath,
@@ -125,7 +122,7 @@ export default function Step2ServicesAndPricing({
 
   const handleServiceAdded = () => {
     setShowServiceSelector(false);
-    loadData(); // Reload services
+    loadData();
   };
 
   const handleServiceRemoved = async (workerServiceId: string) => {
@@ -139,7 +136,6 @@ export default function Step2ServicesAndPricing({
   };
 
   const handleContinue = () => {
-    // Validation
     if (!avatarUrl) {
       showMessage.error(t("worker.profile.avatarRequired"));
       return;
@@ -164,7 +160,9 @@ export default function Step2ServicesAndPricing({
   return (
     <div>
       <Title level={3}>{t("worker.profile.servicesAndPricingTitle")}</Title>
-      <Paragraph type="secondary">{t("worker.profile.servicesAndPricingDesc")}</Paragraph>
+      <Paragraph type="secondary">
+        {t("worker.profile.servicesAndPricingDesc")}
+      </Paragraph>
 
       {/* Images Section */}
       <Card
@@ -187,7 +185,10 @@ export default function Step2ServicesAndPricing({
               disabled={savingImage}
             />
             {!avatarUrl && (
-              <Paragraph type="secondary" style={{ marginTop: 8, fontSize: 12 }}>
+              <Paragraph
+                type="secondary"
+                style={{ marginTop: 8, fontSize: 12 }}
+              >
                 {t("worker.profile.avatarHint")}
               </Paragraph>
             )}
@@ -195,7 +196,7 @@ export default function Step2ServicesAndPricing({
 
           <Col xs={24} md={16}>
             <Title level={5}>{t("worker.profile.gallery")}</Title>
-            <Space direction="vertical" style={{ width: "100%" }}>
+            <Space direction="horizontal" style={{ width: "100%" }}>
               {galleryUrls.map((url, index) => (
                 <img
                   key={index}
@@ -263,7 +264,9 @@ export default function Step2ServicesAndPricing({
               <ServiceCard
                 key={service.worker_service?.id}
                 service={service}
-                onRemove={() => handleServiceRemoved(service.worker_service!.id)}
+                onRemove={() =>
+                  handleServiceRemoved(service.worker_service!.id)
+                }
               />
             ))}
           </Space>
