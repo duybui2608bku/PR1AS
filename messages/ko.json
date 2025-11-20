@@ -43,6 +43,10 @@
       "bookings": "예약",
       "logout": "로그아웃",
       "dashboard": "대시보드",
+      "adminDashboard": "관리자 대시보드",
+      "workerDashboard": "워커 대시보드",
+      "myJobs": "내 작업",
+      "myWork": "내 작업",
       "settings": "설정",
       "user": "사용자",
       "roles": {

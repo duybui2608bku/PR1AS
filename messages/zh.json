@@ -43,6 +43,10 @@
       "bookings": "预订",
       "logout": "退出",
       "dashboard": "仪表板",
+      "adminDashboard": "管理员仪表板",
+      "workerDashboard": "工作者仪表板",
+      "myJobs": "我的工作",
+      "myWork": "我的工作",
       "settings": "设置",
       "user": "用户",
       "roles": {

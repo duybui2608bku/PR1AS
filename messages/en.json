@@ -43,6 +43,10 @@
       "bookings": "Bookings",
       "logout": "Logout",
       "dashboard": "Dashboard",
+      "adminDashboard": "Admin Dashboard",
+      "workerDashboard": "Worker Dashboard",
+      "myJobs": "My Jobs",
+      "myWork": "My Work",
       "settings": "Settings",
       "user": "User",
       "roles": {

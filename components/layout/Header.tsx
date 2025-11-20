@@ -5,6 +5,7 @@ import { Layout, Button, Avatar, Drawer } from "antd";
 import { UserOutlined, MenuOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 import UserMenu from "@/components/common/UserMenu";
 import { useTranslation } from "react-i18next";
@@ -15,9 +16,11 @@ const { Header: AntHeader } = Layout;
 
 export default function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t } = useTranslation();
   const { settings, loading: settingsLoading } = useSiteSettings();
+  const router = useRouter();
 
   useEffect(() => {
     let mounted = true;
@@ -27,10 +30,12 @@ export default function Header() {
         const profile = await authAPI.getProfile();
         if (mounted) {
           setIsAuthenticated(!!profile);
+          setUserRole(profile?.role || null);
         }
       } catch {
         if (mounted) {
           setIsAuthenticated(false);
+          setUserRole(null);
         }
       }
     };
@@ -65,7 +70,9 @@ export default function Header() {
           href="/"
           style={{ display: "flex", alignItems: "center", gap: "8px" }}
         >
-          {settings && settings.headerLogo && settings.headerLogo !== "/logo.png" ? (
+          {settings &&
+          settings.headerLogo &&
+          settings.headerLogo !== "/logo.png" ? (
             settings.headerLogo.startsWith("http") ? (
               // External URL (Supabase storage) - use unoptimized
               <Image
@@ -187,22 +194,44 @@ export default function Header() {
         width={280}
       >
         <div className="flex flex-col gap-4">
-          <Button
-            type="text"
-            block
-            size="large"
-            style={{
-              fontWeight: 500,
-              color: "#222",
-              textAlign: "left",
-            }}
-          >
-            {t("header.becomeWorker")}
-          </Button>
+          {/* Only show "Become Worker" for non-admin users */}
+          {userRole !== "admin" && (
+            <Button
+              type="text"
+              block
+              size="large"
+              style={{
+                fontWeight: 500,
+                color: "#222",
+                textAlign: "left",
+              }}
+            >
+              {t("header.becomeWorker")}
+            </Button>
+          )}
 
           {isAuthenticated ? (
             <>
-              <Link href="/profile">
+              {/* Show dashboard link based on role */}
+              {userRole && (
+                <Link href={`/${userRole}/dashboard`}>
+                  <Button
+                    type="text"
+                    block
+                    size="large"
+                    style={{ textAlign: "left" }}
+                  >
+                    {userRole === "admin"
+                      ? t("header.userMenu.adminDashboard") || "Admin Dashboard"
+                      : userRole === "worker"
+                      ? t("header.userMenu.workerDashboard") ||
+                        "Worker Dashboard"
+                      : t("header.userMenu.dashboard") || "Dashboard"}
+                  </Button>
+                </Link>
+              )}
+
+              <Link href={`/${userRole || "client"}/profile`}>
                 <Button
                   type="text"
                   block
@@ -212,22 +241,76 @@ export default function Header() {
                   {t("header.userMenu.profile")}
                 </Button>
               </Link>
-              <Link href="/bookings">
-                <Button
-                  type="text"
-                  block
-                  size="large"
-                  style={{ textAlign: "left" }}
-                >
-                  {t("header.userMenu.bookings")}
-                </Button>
-              </Link>
+
+              {/* Show different menu items based on role */}
+              {userRole === "client" && (
+                <Link href="/client/my-jobs">
+                  <Button
+                    type="text"
+                    block
+                    size="large"
+                    style={{ textAlign: "left" }}
+                  >
+                    {t("header.userMenu.myJobs") || "My Jobs"}
+                  </Button>
+                </Link>
+              )}
+
+              {userRole === "worker" && (
+                <Link href="/worker/my-jobs">
+                  <Button
+                    type="text"
+                    block
+                    size="large"
+                    style={{ textAlign: "left" }}
+                  >
+                    {t("header.userMenu.myWork") || "My Work"}
+                  </Button>
+                </Link>
+              )}
+
+              {userRole === "admin" && (
+                <>
+                  <Link href="/admin/users">
+                    <Button
+                      type="text"
+                      block
+                      size="large"
+                      style={{ textAlign: "left" }}
+                    >
+                      {t("admin.sidebar.users") || "User Management"}
+                    </Button>
+                  </Link>
+                  <Link href="/admin/settings">
+                    <Button
+                      type="text"
+                      block
+                      size="large"
+                      style={{ textAlign: "left" }}
+                    >
+                      {t("admin.sidebar.settings") || "Settings"}
+                    </Button>
+                  </Link>
+                </>
+              )}
+
               <Button
                 type="text"
                 block
                 size="large"
                 danger
                 style={{ textAlign: "left" }}
+                onClick={async () => {
+                  try {
+                    await authAPI.logout();
+                    setIsAuthenticated(false);
+                    setUserRole(null);
+                    setMobileMenuOpen(false);
+                    router.push("/");
+                  } catch (error) {
+                    console.error("Logout error:", error);
+                  }
+                }}
               >
                 {t("header.userMenu.logout")}
               </Button>

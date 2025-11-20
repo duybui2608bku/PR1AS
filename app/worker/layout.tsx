@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Layout, Menu, Typography, Button, Space } from "antd";
+import { Layout, Menu, Button, Space } from "antd";
 import {
   DashboardOutlined,
   UnorderedListOutlined,
@@ -12,12 +11,13 @@ import {
   MenuUnfoldOutlined,
 } from "@ant-design/icons";
 import { usePathname, useRouter } from "next/navigation";
+import { useMobileSidebar } from "@/hooks/useMobileSidebar";
 import UserMenu from "@/components/common/UserMenu";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 import type { MenuProps } from "antd";
+import "../globals-layout.css";
 
 const { Header, Content, Sider } = Layout;
-const { Title } = Typography;
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -44,11 +44,16 @@ export default function WorkerLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [collapsed, setCollapsed] = useState(false);
   const { t } = useTranslation();
+  const { isMobile, collapsed, mobileOpen, toggleSidebar, closeMobileSidebar } =
+    useMobileSidebar();
 
   const menuItems: MenuItem[] = [
-    getItem(t("worker.dashboard.title") || "Dashboard", "/worker/dashboard", <DashboardOutlined />),
+    getItem(
+      t("worker.dashboard.title") || "Dashboard",
+      "/worker/dashboard",
+      <DashboardOutlined />
+    ),
     getItem("My Wallet", "/worker/wallet", <WalletOutlined />),
     getItem("My Jobs", "/worker/my-jobs", <UnorderedListOutlined />),
     getItem(t("nav.profile") || "Profile", "/worker/profile", <UserOutlined />),
@@ -56,17 +61,30 @@ export default function WorkerLayout({
 
   const handleMenuClick: MenuProps["onClick"] = (e) => {
     router.push(e.key);
+    closeMobileSidebar(); // Close sidebar on mobile when menu item is clicked
   };
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
+      {/* Mobile backdrop */}
+      {isMobile && mobileOpen && (
+        <div
+          className="mobile-backdrop mobile-backdrop-visible"
+          onClick={closeMobileSidebar}
+        />
+      )}
+
       <Sider
         collapsible
-        collapsed={collapsed}
-        onCollapse={setCollapsed}
+        collapsed={isMobile ? false : collapsed}
+        onCollapse={(collapsed) => !isMobile && toggleSidebar()}
         breakpoint="lg"
         collapsedWidth="80"
         width={260}
+        className={`
+          ${isMobile ? "mobile-sidebar-overlay" : "desktop-sidebar"}
+          ${isMobile && mobileOpen ? "mobile-sidebar-open" : ""}
+        `}
         style={{
           background: "#fff",
           borderRight: "1px solid #f0f0f0",
@@ -80,34 +98,15 @@ export default function WorkerLayout({
         trigger={null}
       >
         <div
-          style={{
-            padding: "16px",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            justifyContent: collapsed ? "center" : "flex-start",
-          }}
+          className={`sidebar-brand ${
+            collapsed && !isMobile ? "collapsed" : ""
+          }`}
         >
-          <div
-            style={{
-              width: 40,
-              height: 40,
-              background: "linear-gradient(135deg, #690f0f 0%, #8b1818 100%)",
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#fff",
-              fontWeight: "bold",
-              fontSize: 16,
-            }}
-          >
-            PR
-          </div>
-          {!collapsed && (
-            <Title level={4} style={{ margin: 0 }}>
+          <div className="brand-logo">PR</div>
+          {(!collapsed || isMobile) && (
+            <span className="brand-title">
               {t("worker.dashboard.title") || "Worker Panel"}
-            </Title>
+            </span>
           )}
         </div>
         <Menu
@@ -119,30 +118,26 @@ export default function WorkerLayout({
         />
       </Sider>
       <Layout
-        style={{ marginLeft: collapsed ? 80 : 260, transition: "all 0.2s" }}
+        className={`${
+          isMobile ? "mobile-layout-content" : "desktop-layout-content"
+        }`}
+        style={{
+          marginLeft: isMobile ? 0 : collapsed ? 80 : 260,
+          transition: isMobile ? "none" : "all 0.2s",
+        }}
       >
-        <Header
-          style={{
-            padding: "0 24px",
-            background: "#fff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            borderBottom: "1px solid #f0f0f0",
-            position: "sticky",
-            top: 0,
-            zIndex: 1,
-          }}
-        >
+        <Header className="layout-header">
           <Button
             type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{
-              fontSize: "16px",
-              width: 48,
-              height: 48,
-            }}
+            icon={
+              collapsed && !isMobile ? (
+                <MenuUnfoldOutlined />
+              ) : (
+                <MenuFoldOutlined />
+              )
+            }
+            onClick={toggleSidebar}
+            className="mobile-menu-button"
           />
           <Space size="middle">
             <LanguageSwitcher />
