@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "./globals-layout.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import I18nProvider from "@/components/providers/I18nProvider";
 import { AntdAppProvider } from "@/components/providers/AntdProvider";
@@ -68,7 +69,14 @@ export async function generateMetadata(): Promise<Metadata> {
       title: "PR1AS - Nền tảng kết nối Client & Worker",
       description:
         "Tìm kiếm và thuê Worker chuyên nghiệp hoặc cung cấp dịch vụ và kiếm thu nhập",
-      keywords: ["worker", "client", "dịch vụ", "tìm việc", "thuê người", "PR1AS"],
+      keywords: [
+        "worker",
+        "client",
+        "dịch vụ",
+        "tìm việc",
+        "thuê người",
+        "PR1AS",
+      ],
       authors: [{ name: "PR1AS Team" }],
       openGraph: {
         title: "PR1AS - Nền tảng kết nối Client & Worker",

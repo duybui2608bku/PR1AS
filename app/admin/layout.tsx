@@ -17,8 +17,11 @@ import {
 import { useRouter, usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { useMobileSidebar } from "@/hooks/useMobileSidebar";
 import type { MenuProps } from "antd";
 import Loading from "@/components/common/Loading";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
+import "../globals-layout.css";
 import "./styles.css";
 
 const { Header, Sider, Content } = Layout;
@@ -46,7 +49,6 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [collapsed, setCollapsed] = useState(false);
   const [user, setUser] = useState<{
     email?: string;
     user_metadata?: { role?: string };
@@ -55,7 +57,9 @@ export default function AdminLayout({
   const router = useRouter();
   const pathname = usePathname();
   const supabase = getSupabaseClient();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const { isMobile, collapsed, mobileOpen, toggleSidebar, closeMobileSidebar } =
+    useMobileSidebar();
 
   const menuItems: MenuItem[] = [
     getItem(t("admin.sidebar.dashboard"), "/admin", <DashboardOutlined />),
@@ -120,8 +124,6 @@ export default function AdminLayout({
 
   useEffect(() => {
     checkAuth();
-    // Force admin panel to always use Vietnamese
-    i18n.changeLanguage('vi');
   }, [checkAuth]);
 
   const handleLogout = async () => {
@@ -150,19 +152,40 @@ export default function AdminLayout({
 
   const handleMenuClick = (e: { key: string }) => {
     router.push(e.key);
+    closeMobileSidebar(); // Close sidebar on mobile when menu item is clicked
   };
 
   if (loading) {
-    return <Loading variant="fullPage" size="large" tip={t("common.loading")} />;
+    return (
+      <Loading variant="fullPage" size="large" tip={t("common.loading")} />
+    );
   }
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
+      {/* Mobile backdrop */}
+      {isMobile && mobileOpen && (
+        <div
+          className="mobile-backdrop mobile-backdrop-visible"
+          onClick={closeMobileSidebar}
+        />
+      )}
+
       <Sider
         trigger={null}
         collapsible
-        collapsed={collapsed}
+        collapsed={isMobile ? false : collapsed}
+        onCollapse={(collapsed) => !isMobile && toggleSidebar()}
+        breakpoint="lg"
+        collapsedWidth="80"
+        width={260}
+        className={`
+          ${isMobile ? "mobile-sidebar-overlay" : "desktop-sidebar"}
+          ${isMobile && mobileOpen ? "mobile-sidebar-open" : ""}
+        `}
         style={{
+          background: "#fff",
+          borderRight: "1px solid #f0f0f0",
           overflow: "auto",
           height: "100vh",
           position: "fixed",
@@ -172,56 +195,56 @@ export default function AdminLayout({
         }}
       >
         <div
-          style={{
-            height: 64,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "white",
-            fontSize: collapsed ? 16 : 20,
-            fontWeight: "bold",
-            borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-          }}
+          className={`sidebar-brand ${
+            collapsed && !isMobile ? "collapsed" : ""
+          }`}
         >
-          {collapsed ? "PR1" : `${t("header.brandName")} Admin`}
+          <div className="brand-logo">PR</div>
+          {(!collapsed || isMobile) && (
+            <span className="brand-title">
+              {`${t("header.brandName")} Admin`}
+            </span>
+          )}
         </div>
         <Menu
-          theme="dark"
           mode="inline"
           selectedKeys={[pathname]}
           items={menuItems}
           onClick={handleMenuClick}
+          style={{ borderRight: 0 }}
         />
       </Sider>
       <Layout
-        style={{ marginLeft: collapsed ? 80 : 200, transition: "all 0.2s" }}
+        className={`${
+          isMobile ? "mobile-layout-content" : "desktop-layout-content"
+        }`}
+        style={{
+          marginLeft: isMobile ? 0 : collapsed ? 80 : 260,
+          transition: isMobile ? "none" : "all 0.2s",
+        }}
       >
-        <Header
-          style={{
-            padding: "0 24px",
-            background: "#fff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            borderBottom: "1px solid #f0f0f0",
-          }}
-        >
+        <Header className="layout-header">
           <Button
             type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{
-              fontSize: "16px",
-              width: 64,
-              height: 64,
-            }}
+            icon={
+              collapsed && !isMobile ? (
+                <MenuUnfoldOutlined />
+              ) : (
+                <MenuFoldOutlined />
+              )
+            }
+            onClick={toggleSidebar}
+            className="mobile-menu-button"
           />
-          <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-            <Space style={{ cursor: "pointer" }}>
-              <Avatar icon={<UserOutlined />} />
-              <span>{user?.email}</span>
-            </Space>
-          </Dropdown>
+          <Space size="middle">
+            <LanguageSwitcher />
+            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+              <Space style={{ cursor: "pointer" }}>
+                <Avatar icon={<UserOutlined />} />
+                <span>{user?.email}</span>
+              </Space>
+            </Dropdown>
+          </Space>
         </Header>
         <Content
           style={{
