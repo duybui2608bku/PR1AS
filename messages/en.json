@@ -713,5 +713,32 @@
       "subtitle": "Sorry, an error occurred. Please try again.",
       "button": "Try Again"
     }
+  },
+  "market": {
+    "title": "Worker Marketplace",
+    "subtitle": "Discover and connect with thousands of professional workers",
+    "searchPlaceholder": "Search workers by name...",
+    "search": "Search",
+    "filters": "Filters",
+    "applyFilters": "Apply Filters",
+    "resetFilters": "Reset Filters",
+    "resultsCount": "{count} workers found",
+    "noWorkers": "No workers found matching your criteria",
+    "ageRange": "Age Range",
+    "years": "years",
+    "yearsOld": "years old",
+    "min": "Min",
+    "max": "Max",
+    "category": "Service Category",
+    "selectCategory": "Select category",
+    "service": "Service",
+    "selectService": "Select specific service",
+    "priceRange": "Price Range (USD/hr)",
+    "priceNotSet": "Price not set",
+    "available": "Available",
+    "services": "Services",
+    "more": "more",
+    "viewProfile": "View Profile",
+    "pagination": "Showing {start} - {end} of {total} workers"
   }
 }

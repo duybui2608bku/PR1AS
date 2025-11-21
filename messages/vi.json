@@ -725,5 +725,32 @@
       "subtitle": "Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại.",
       "button": "Thử lại"
     }
+  },
+  "market": {
+    "title": "Chợ Worker",
+    "subtitle": "Khám phá và kết nối với hàng ngàn worker chuyên nghiệp",
+    "searchPlaceholder": "Tìm kiếm worker theo tên...",
+    "search": "Tìm kiếm",
+    "filters": "Bộ lọc",
+    "applyFilters": "Áp dụng bộ lọc",
+    "resetFilters": "Đặt lại bộ lọc",
+    "resultsCount": "{count} worker tìm thấy",
+    "noWorkers": "Không tìm thấy worker nào phù hợp",
+    "ageRange": "Độ tuổi",
+    "years": "tuổi",
+    "yearsOld": "tuổi",
+    "min": "Tối thiểu",
+    "max": "Tối đa",
+    "category": "Danh mục dịch vụ",
+    "selectCategory": "Chọn danh mục",
+    "service": "Dịch vụ",
+    "selectService": "Chọn dịch vụ cụ thể",
+    "priceRange": "Khoảng giá (USD/giờ)",
+    "priceNotSet": "Giá chưa thiết lập",
+    "available": "Sẵn sàng",
+    "services": "Dịch vụ",
+    "more": "thêm",
+    "viewProfile": "Xem hồ sơ",
+    "pagination": "Hiển thị {start} - {end} trên tổng {total} worker"
   }
 }

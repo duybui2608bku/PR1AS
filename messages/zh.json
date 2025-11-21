@@ -599,5 +599,32 @@
       "subtitle": "抱歉，发生了错误。请重试。",
       "button": "重试"
     }
+  },
+  "market": {
+    "title": "工作者市场",
+    "subtitle": "发现并联系数千名专业工作者",
+    "searchPlaceholder": "按姓名搜索工作者...",
+    "search": "搜索",
+    "filters": "筛选",
+    "applyFilters": "应用筛选",
+    "resetFilters": "重置筛选",
+    "resultsCount": "找到 {count} 名工作者",
+    "noWorkers": "未找到符合条件的工作者",
+    "ageRange": "年龄范围",
+    "years": "岁",
+    "yearsOld": "岁",
+    "min": "最小",
+    "max": "最大",
+    "category": "服务类别",
+    "selectCategory": "选择类别",
+    "service": "服务",
+    "selectService": "选择具体服务",
+    "priceRange": "价格范围 (美元/小时)",
+    "priceNotSet": "未设置价格",
+    "available": "可用",
+    "services": "服务",
+    "more": "更多",
+    "viewProfile": "查看资料",
+    "pagination": "显示 {start} - {end}，共 {total} 名工作者"
   }
 }
