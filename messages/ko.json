@@ -599,5 +599,32 @@
       "subtitle": "죄송합니다. 오류가 발생했습니다. 다시 시도해주세요.",
       "button": "다시 시도"
     }
+  },
+  "market": {
+    "title": "워커 마켓",
+    "subtitle": "수천 명의 전문 워커를 발견하고 연결하세요",
+    "searchPlaceholder": "이름으로 워커 검색...",
+    "search": "검색",
+    "filters": "필터",
+    "applyFilters": "필터 적용",
+    "resetFilters": "필터 재설정",
+    "resultsCount": "{count}명의 워커를 찾았습니다",
+    "noWorkers": "조건과 일치하는 워커가 없습니다",
+    "ageRange": "연령대",
+    "years": "세",
+    "yearsOld": "세",
+    "min": "최소",
+    "max": "최대",
+    "category": "서비스 카테고리",
+    "selectCategory": "카테고리 선택",
+    "service": "서비스",
+    "selectService": "특정 서비스 선택",
+    "priceRange": "가격 범위 (USD/시간)",
+    "priceNotSet": "가격 미설정",
+    "available": "이용 가능",
+    "services": "서비스",
+    "more": "더보기",
+    "viewProfile": "프로필 보기",
+    "pagination": "{total}명 중 {start} - {end} 표시"
   }
 }
