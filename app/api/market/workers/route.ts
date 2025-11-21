@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
         : 12,
     };
 
-    // Build query
+    // Build query - Use left joins to get all published workers
     let query = supabase
       .from("worker_profiles")
       .select(
@@ -99,11 +99,12 @@ export async function GET(request: NextRequest) {
         bio,
         profile_status,
         created_at,
-        images:worker_images!inner(image_url, image_type),
-        services:worker_services!inner(
+        images:worker_images(image_url, image_type, is_approved),
+        services:worker_services(
           id,
           service_id,
-          service:services!inner(
+          is_active,
+          service:services(
             id,
             name_key,
             slug,
@@ -125,10 +126,7 @@ export async function GET(request: NextRequest) {
       `,
         { count: "exact" }
       )
-      .eq("profile_status", WorkerProfileStatus.PUBLISHED)
-      .eq("images.image_type", "avatar")
-      .eq("images.is_approved", true)
-      .eq("services.is_active", true);
+      .eq("profile_status", WorkerProfileStatus.PUBLISHED);
 
     // Apply age filters
     if (filters.age_min !== undefined) {
@@ -145,15 +143,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Apply service category filter
-    if (filters.category_id) {
-      query = query.eq("services.service.category_id", filters.category_id);
-    }
-
-    // Apply service filter
-    if (filters.service_id) {
-      query = query.eq("services.service_id", filters.service_id);
-    }
+    // Note: Category and service filters are applied in post-processing
+    // because Supabase doesn't support filtering on nested relations well
 
     // Apply pagination
     const from = ((filters.page || 1) - 1) * (filters.limit || 12);
@@ -173,17 +164,22 @@ export async function GET(request: NextRequest) {
 
     // Process data
     let workers = (data || []).map((worker: any) => {
-      // Get avatar
+      // Get approved avatar
       const avatar = worker.images?.find(
-        (img: any) => img.image_type === "avatar"
+        (img: any) => img.image_type === "avatar" && img.is_approved === true
+      );
+
+      // Filter active services only
+      const activeServices = (worker.services || []).filter(
+        (s: any) => s.is_active === true && s.service
       );
 
       // Calculate price range
       let minPrice: number | undefined;
       let maxPrice: number | undefined;
 
-      if (worker.services && worker.services.length > 0) {
-        const prices = worker.services
+      if (activeServices.length > 0) {
+        const prices = activeServices
           .map((s: any) => s.pricing?.[0]?.price_usd)
           .filter((p: any) => p !== undefined && p !== null);
 
@@ -206,7 +202,7 @@ export async function GET(request: NextRequest) {
               image_url: avatar.image_url,
             }
           : undefined,
-        services: worker.services?.map((s: any) => ({
+        services: activeServices.map((s: any) => ({
           id: s.id,
           service_id: s.service_id,
           service: s.service,
@@ -217,6 +213,20 @@ export async function GET(request: NextRequest) {
         max_price: maxPrice,
       };
     }) as WorkerMarketProfile[];
+
+    // Apply category filter (post-processing)
+    if (filters.category_id) {
+      workers = workers.filter((w) =>
+        w.services.some((s) => s.service?.category_id === filters.category_id)
+      );
+    }
+
+    // Apply service filter (post-processing)
+    if (filters.service_id) {
+      workers = workers.filter((w) =>
+        w.services.some((s) => s.service_id === filters.service_id)
+      );
+    }
 
     // Apply price filters (post-processing since we need to calculate from services)
     if (filters.price_min !== undefined) {

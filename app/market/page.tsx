@@ -32,6 +32,7 @@ import WorkerFilter from "@/components/market/WorkerFilter";
 import { WorkerProfileService } from "@/lib/worker/service";
 import { createClient } from "@/lib/supabase/client";
 import Loading from "@/components/common/Loading";
+import MainLayout from "@/components/layout/MainLayout";
 
 const { Title, Text } = Typography;
 const { Search } = Input;
@@ -128,14 +129,19 @@ export default function MarketPage() {
   };
 
   if (loading) {
-    return <Loading />;
+    return (
+      <MainLayout>
+        <Loading />
+      </MainLayout>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <MainLayout>
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Space direction="vertical" className="w-full" size="large">
             <div>
               <Title level={1} className="mb-2">
@@ -153,7 +159,14 @@ export default function MarketPage() {
                   placeholder={t("market.searchPlaceholder")}
                   allowClear
                   enterButton={
-                    <Button type="primary" icon={<SearchOutlined />}>
+                    <Button
+                      type="primary"
+                      icon={<SearchOutlined />}
+                      style={{
+                        backgroundColor: '#FF385C',
+                        borderColor: '#FF385C'
+                      }}
+                    >
                       {t("market.search")}
                     </Button>
                   }
@@ -164,12 +177,15 @@ export default function MarketPage() {
               </Col>
               <Col xs={24} sm={24} md={6}>
                 <Button
-                  type="default"
                   icon={<FilterOutlined />}
                   size="large"
                   block
                   className="md:hidden"
                   onClick={() => setMobileFilterVisible(true)}
+                  style={{
+                    borderColor: '#FF385C',
+                    color: '#FF385C'
+                  }}
                 >
                   {t("market.filters")}
                 </Button>
@@ -177,15 +193,17 @@ export default function MarketPage() {
             </Row>
 
             {/* Results Count */}
-            <Text className="text-gray-600">
-              {t("market.resultsCount", { count: pagination.total })}
-            </Text>
+            {!searchLoading && (
+              <Text className="text-gray-600 text-base">
+                {t("market.resultsCount", { count: pagination.total })}
+              </Text>
+            )}
           </Space>
         </div>
-      </div>
+        </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Row gutter={[24, 24]}>
           {/* Desktop Filter Sidebar */}
           <Col xs={0} sm={0} md={6} lg={6}>
@@ -239,6 +257,9 @@ export default function MarketPage() {
                             total,
                           })
                         }
+                        style={{
+                          fontWeight: 500
+                        }}
                       />
                     </div>
                   )}
@@ -246,11 +267,11 @@ export default function MarketPage() {
               )}
             </Spin>
           </Col>
-        </Row>
-      </div>
+          </Row>
+        </div>
 
-      {/* Mobile Filter Drawer */}
-      <Drawer
+        {/* Mobile Filter Drawer */}
+        <Drawer
         title={
           <Space>
             <FilterOutlined />
@@ -270,6 +291,7 @@ export default function MarketPage() {
           loading={searchLoading}
         />
       </Drawer>
-    </div>
+      </div>
+    </MainLayout>
   );
 }

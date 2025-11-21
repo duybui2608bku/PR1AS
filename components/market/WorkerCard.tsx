@@ -44,9 +44,9 @@ export default function WorkerCard({ worker }: WorkerCardProps) {
   return (
     <Card
       hoverable
-      className="h-full flex flex-col overflow-hidden transition-all duration-300 hover:shadow-2xl"
+      className="h-full flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl border-0"
       cover={
-        <div className="relative h-64 bg-gradient-to-br from-purple-100 to-pink-100 overflow-hidden">
+        <div className="relative h-64 bg-gradient-to-br from-pink-50 to-rose-100 overflow-hidden">
           {avatarUrl ? (
             <img
               src={avatarUrl}
@@ -54,12 +54,16 @@ export default function WorkerCard({ worker }: WorkerCardProps) {
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="flex items-center justify-center h-full">
-              <UserOutlined className="text-6xl text-gray-400" />
+            <div className="flex items-center justify-center h-full bg-gradient-to-br from-pink-100 to-rose-100">
+              <UserOutlined className="text-6xl text-gray-300" />
             </div>
           )}
           <div className="absolute top-3 right-3">
-            <Tag color="green" className="text-xs font-semibold">
+            <Tag
+              color="success"
+              className="text-xs font-semibold border-0 shadow-sm"
+              style={{ backgroundColor: '#52c41a' }}
+            >
               {t("market.available")}
             </Tag>
           </div>
@@ -99,14 +103,24 @@ export default function WorkerCard({ worker }: WorkerCardProps) {
             {topServices.map((service) => (
               <Tag
                 key={service.id}
-                color="blue"
-                className="text-xs"
+                className="text-xs border-0"
+                style={{
+                  backgroundColor: '#fff1f0',
+                  color: '#FF385C',
+                  fontWeight: 500
+                }}
               >
                 {t(service.service.name_key)}
               </Tag>
             ))}
             {worker.services && worker.services.length > 3 && (
-              <Tag className="text-xs">
+              <Tag
+                className="text-xs border-0"
+                style={{
+                  backgroundColor: '#f5f5f5',
+                  color: '#666'
+                }}
+              >
                 +{worker.services.length - 3} {t("market.more")}
               </Tag>
             )}
@@ -114,10 +128,10 @@ export default function WorkerCard({ worker }: WorkerCardProps) {
         </div>
 
         {/* Price */}
-        <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg">
+        <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: '#fff7e6' }}>
           <Space>
-            <DollarOutlined className="text-green-600" />
-            <Text strong className="text-green-700">
+            <DollarOutlined style={{ color: '#FF385C', fontSize: 18 }} />
+            <Text strong style={{ color: '#FF385C', fontSize: 16 }}>
               {priceRange}
             </Text>
           </Space>
@@ -125,7 +139,17 @@ export default function WorkerCard({ worker }: WorkerCardProps) {
 
         {/* Action Button */}
         <Link href={`/worker/profile/${worker.id}`} className="w-full">
-          <Button type="primary" block size="large" className="font-semibold">
+          <Button
+            type="primary"
+            block
+            size="large"
+            className="font-semibold"
+            style={{
+              backgroundColor: '#FF385C',
+              borderColor: '#FF385C',
+              height: 48
+            }}
+          >
             {t("market.viewProfile")}
           </Button>
         </Link>

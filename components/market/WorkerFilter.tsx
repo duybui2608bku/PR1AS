@@ -91,11 +91,11 @@ export default function WorkerFilter({
 
   return (
     <Card
-      className="sticky top-4 shadow-lg"
+      className="sticky top-4 shadow-md border-0"
       title={
         <Space>
-          <FilterOutlined />
-          <Title level={4} className="m-0">
+          <FilterOutlined style={{ color: '#FF385C' }} />
+          <Title level={4} className="m-0" style={{ color: '#262626' }}>
             {t("market.filters")}
           </Title>
         </Space>
@@ -251,6 +251,11 @@ export default function WorkerFilter({
             block
             loading={loading}
             className="font-semibold"
+            style={{
+              backgroundColor: '#FF385C',
+              borderColor: '#FF385C',
+              height: 48
+            }}
           >
             {t("market.applyFilters")}
           </Button>
@@ -259,6 +264,7 @@ export default function WorkerFilter({
             size="large"
             block
             onClick={handleReset}
+            style={{ height: 48 }}
           >
             {t("market.resetFilters")}
           </Button>
