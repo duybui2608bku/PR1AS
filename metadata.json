@@ -1,0 +1,5 @@
+{
+  "name": "SecureVault",
+  "description": "A secure, personal password and account manager with local encryption, category management, and dark mode.",
+  "requestFramePermissions": []
+}
